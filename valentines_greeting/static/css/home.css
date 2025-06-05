@@ -1,0 +1,108 @@
+/* Reset some basic styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #ffe6f0, #f9f0ff);
+    color: #333;
+}
+
+/* Welcome Section */
+.welcome-container {
+    text-align: center;
+    padding: 50px 20px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.welcome-text {
+    font-size: 1.3rem;
+    color: #8b1c62;
+    margin-bottom: 10px;
+}
+
+.heading {
+    font-size: 2.5rem;
+    color: #d63384;
+    margin-bottom: 40px;
+    font-weight: bold;
+    text-shadow: 1px 1px #fff0f5;
+}
+
+/* Card Container */
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+}
+
+/* Individual Card */
+.card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 30px 20px;
+    width: 280px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.card h3 {
+    color: #c2185b;
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* Buttons */
+.btn-container {
+    margin-top: 15px;
+}
+
+.btn {
+    background-color: #d63384;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn:hover {
+    background-color: #ad1457;
+    transform: scale(1.05);
+}
+
+.logout-btn {
+    background-color: #e57373;
+}
+
+.logout-btn:hover {
+    background-color: #c62828;
+}
+
+/* Valentine Quote Section */
+.valentine-quote {
+    background: #fff0f5;
+    padding: 30px 40px;
+    margin: 40px auto;
+    max-width: 700px;
+    border-radius: 20px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    font-style: italic;
+    font-size: 1.2rem;
+    color: #6a1b9a;
+    text-align: center;
+    line-height: 1.6;
+}
+

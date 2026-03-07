@@ -106,7 +106,7 @@
         <h1 class="val-to">Dear {{ data.name|default:"Valentine" }},</h1>
 
         {% if data.image_base64 %}
-        <img src="{{ data.image_base64 }}" class="val-img" alt="Valentine Image">
+        <img src="{{ data.image_base64|safe }}" class="val-img" alt="Valentine Image">
         {% elif data.image %}
         <img src="{{ data.image.url }}" class="val-img" alt="Valentine Image">
         {% endif %}
@@ -118,15 +118,21 @@
         <div class="val-buttons" id="btn-container">
             <form action="" method="post" id="yes-form">
                 {% csrf_token %}
-                <!-- We output the hidden form fields to satisfy Django's update view -->
                 <div class="hidden-form">
                     {{ form }}
                 </div>
-                <!-- we will manually set status to True in JS before submit -->
                 <button type="submit" class="btn-yes" id="btn-yes">YES!</button>
             </form>
 
-            <button type="button" class="btn-no" id="btn-no">No</button>
+            <form action="" method="post" id="no-form">
+                {% csrf_token %}
+                <div class="hidden-form">
+                    {{ form }}
+                </div>
+                <!-- status False, but is_rejected will be set in views if possible -->
+                <!-- actually we can just use a hidden input for is_rejected if we create it -->
+                <button type="submit" class="btn-no" id="btn-no">No</button>
+            </form>
         </div>
         {% else %}
         <p class="val-question">Yay! You accepted! 🥰💖</p>
@@ -137,35 +143,35 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const noBtn = document.getElementById('btn-no');
-        const container = document.getElementById('btn-container');
         const yesForm = document.getElementById('yes-form');
+        const noForm = document.getElementById('no-form');
 
-        // Make the No button dodge the cursor
+        const dodge = (e) => {
+            if (e.type === 'touchstart') e.preventDefault();
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 50);
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+            noBtn.style.zIndex = 9999;
+        };
+
         if (noBtn) {
-            noBtn.addEventListener('mouseover', () => {
-                const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
-                const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 50);
+            noBtn.addEventListener('mouseover', dodge);
+            noBtn.addEventListener('touchstart', dodge);
 
-                noBtn.style.position = 'fixed';
-                noBtn.style.left = `${x}px`;
-                noBtn.style.top = `${y}px`;
-                noBtn.style.zIndex = 9999;
-            });
-
-            // Just in case they click it before it dodges on mobile
+            // If they actually click it (hard on moving target)
             noBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                alert("Are you sure? Try again! 😉");
+                const confirmed = confirm("Are you absolutely sure you want to reject? 💔");
+                if (!confirmed) e.preventDefault();
             });
         }
 
         if (yesForm) {
             yesForm.addEventListener('submit', (e) => {
-                // Find the status checkbox in the hidden Django form and check it to True
                 const statusCheckbox = yesForm.querySelector('input[name="status"]');
-                if (statusCheckbox) {
-                    statusCheckbox.checked = true;
-                }
+                if (statusCheckbox) statusCheckbox.checked = true;
             });
         }
     });

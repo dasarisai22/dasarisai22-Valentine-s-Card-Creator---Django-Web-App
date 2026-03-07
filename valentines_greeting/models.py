@@ -11,7 +11,8 @@ class Card(models.Model):
     response_date = models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to='images/', blank=True, null=True)
     image_base64 = models.TextField(blank=True, null=True)
-    status = models.BooleanField(blank=False)
+    status = models.BooleanField(default=False)
+    is_rejected = models.BooleanField(default=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     
     def __str__(self):

@@ -73,24 +73,44 @@ def card_update (request,id):
         form = Cardform(request.POST, request.FILES, instance=data)
         if form.is_valid():
             card = form.save(commit=False)
+            
+            # If the logged in user IS the owner, they are using the Editor
+            # If NOT the owner (or not logged in), they are using the Experience
+            is_owner = request.user.is_authenticated and data.user_id == request.user
+            
+            if not is_owner:
+                # Recipient logic: toggle status/rejection
+                if 'status' in request.POST:
+                    card.status = True
+                    card.is_rejected = False
+                else:
+                    card.is_rejected = True
+                    card.status = False
+            
+            # Save image as base64 if provided
             if 'image' in request.FILES:
                 import base64
                 image_file = request.FILES['image']
                 encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
                 mime_type = image_file.content_type
                 card.image_base64 = f"data:{mime_type};base64,{encoded_string}"
+            
             card.save()
-
-            messages.success(request, 'Card Updated successfully!')
-            return redirect('card_details')
+            messages.success(request, 'Card Updated!' if is_owner else 'Response recorded!')
+            return redirect('card_details' if is_owner else 'home')
     else:
-        form=Cardform(instance=data)
+        form = Cardform(instance=data)
+    
+    # Determine which template to show
+    is_owner = request.user.is_authenticated and data.user_id == request.user
+    template = 'card_edit_editor.html' if is_owner else 'card_update.html'
+    
     context = {
-        'title':'Your Love Card',
-        'form':form,
+        'title': 'Edit Card' if is_owner else 'Your Love Card',
+        'form': form,
         'data': data,
     }
-    return render(request,'card_update.html',context)
+    return render(request, template, context)
 
 def card_delete(request, id):
     card = get_object_or_404(Card, id=id, user_id=request.user)  

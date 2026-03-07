@@ -30,16 +30,16 @@
             <div class="love-card-header">
                 {% if data.status %}
                 <span class="status-badge accepted"><i class="fa-solid fa-heart"></i> Accepted</span>
-                {% elif data.propose_date == data.response_date %}
-                <span class="status-badge waiting"><i class="fa-solid fa-clock"></i> Waiting</span>
-                {% else %}
+                {% elif data.is_rejected %}
                 <span class="status-badge rejected"><i class="fa-solid fa-heart-crack"></i> Rejected</span>
+                {% else %}
+                <span class="status-badge waiting"><i class="fa-solid fa-clock"></i> Waiting</span>
                 {% endif %}
             </div>
 
             {% if data.image_base64 %}
             <div class="love-card-image">
-                <img src="{{ data.image_base64 }}" alt="Card Image">
+                <img src="{{ data.image_base64|safe }}" alt="Card Image">
             </div>
             {% elif data.image %}
             <div class="love-card-image">

@@ -64,30 +64,26 @@ def card_details(request):
 
 
 def card_update (request,id):
-    try:
-        data = Card.objects.get(id=id)
-
-    except:
-        return HttpResponse('data not found')
+    data = get_object_or_404(Card, id=id)
+    is_owner = request.user.is_authenticated and data.user_id == request.user
+    
     if request.method == 'POST':
         form = Cardform(request.POST, request.FILES, instance=data)
         if form.is_valid():
             card = form.save(commit=False)
             
-            # Check if this is the owner editing, or a recipient responding
-            is_owner = request.user.is_authenticated and data.user_id == request.user
-            
+            # Recipient response logic
             if not is_owner:
-                # Recipient Response Logic
+                # Toggle based on which form was submitted
                 if 'status' in request.POST:
                     card.status = True
                     card.is_rejected = False
-                else:
-                    # Form submitted without 'status' checkbox means 'No' was clicked
+                else: 
+                    # If it was the 'No-Form' (which doesn't send 'status')
                     card.is_rejected = True
                     card.status = False
             
-            # Preserve old base64 if no new image is uploaded
+            # Image Persistence
             if 'image' in request.FILES:
                 import base64
                 img = request.FILES['image']
@@ -95,22 +91,23 @@ def card_update (request,id):
                 encoded = base64.b64encode(img.read()).decode('utf-8')
                 mime = img.content_type or 'image/jpeg'
                 card.image_base64 = f"data:{mime};base64,{encoded}"
-            
+            else:
+                # Don't let an empty field overwrite existing base64
+                card.image_base64 = data.image_base64
+
             card.save()
-            messages.success(request, 'Card Updated!' if is_owner else 'Response recorded!')
+            messages.success(request, 'Response Recorded!' if not is_owner else 'Card Updated!')
             return redirect('card_details' if is_owner else 'home')
     else:
         form = Cardform(instance=data)
     
-    is_owner = request.user.is_authenticated and data.user_id == request.user
     template = 'card_edit_editor.html' if is_owner else 'card_update.html'
-    
     context = {
-        'title': 'Edit Card' if is_owner else 'Your Love Card',
+        'title': 'Your Love Card' if not is_owner else 'Edit Card',
         'form': form,
         'data': data,
     }
-    return render(request,template,context)
+    return render(request, template, context)
 
 def card_delete(request, id):
     card = get_object_or_404(Card, id=id, user_id=request.user)  

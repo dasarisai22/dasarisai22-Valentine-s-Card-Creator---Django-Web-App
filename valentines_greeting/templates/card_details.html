@@ -65,10 +65,13 @@
 
             {% if not data.status %}
             <div class="love-card-actions">
-                {% if data.propose_date == data.response_date %}
                 <a href="{% url 'card_update' data.id %}" class="action-btn edit-btn">
                     <i class="fa-solid fa-pen-to-square"></i> Edit
                 </a>
+                <button onclick="shareCard('{{ data.id }}')" class="action-btn share-btn"
+                    style="background: rgba(59, 130, 246, 0.12); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2);">
+                    <i class="fa-solid fa-share-nodes"></i> Share
+                </button>
                 {% endif %}
                 <a href="{% url 'card_delete' data.id %}" class="action-btn delete-btn">
                     <i class="fa-solid fa-trash-can"></i> Delete
@@ -93,3 +96,27 @@
 </div>
 
 {% endblock content %}
+
+{% block scripts %}
+<script>
+    function shareCard(cardId) {
+        const baseUrl = window.location.origin;
+        const shareUrl = `${baseUrl}/card_update/${cardId}/`;
+
+        // Create a temporary input to copy the URL
+        const tempInput = document.createElement('input');
+        tempInput.value = shareUrl;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+
+        try {
+            document.execCommand('copy');
+            alert("Link copied to clipboard! Share it with your Valentine! ❤️\n\n" + shareUrl);
+        } catch (err) {
+            prompt("Copy this link to share your card:", shareUrl);
+        }
+
+        document.body.removeChild(tempInput);
+    }
+</script>
+{% endblock scripts %}

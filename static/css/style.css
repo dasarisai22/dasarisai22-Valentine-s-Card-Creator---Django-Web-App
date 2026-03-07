@@ -11,14 +11,14 @@
 
 /* Body Styling */
 body {
-    height: 100vh;
+    min-height: 100vh;
     width: 100vw;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     font-family: 'Inter', 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #1a1a2e 100%);
     color: #e0e0e0;
+    overflow-x: hidden;
 }
 
 /* ============================
@@ -220,12 +220,9 @@ body {
     width: 100vw;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
     margin-top: 70px;
-    margin-bottom: 0;
+    margin-bottom: 50px;
     padding: 30px 20px;
-    overflow-y: auto;
     position: relative;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 30%, #0f3460 60%, #1a1a2e 100%);
 }

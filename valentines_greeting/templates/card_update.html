@@ -1,53 +1,171 @@
 {% extends 'index.html' %}
 {% load static %}
 {% block style %}
-<link rel="stylesheet" href="{% static 'css/update.css' %}?v=3">
+<style>
+    .val-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        width: 100%;
+        padding: 20px;
+        position: relative;
+    }
+
+    .val-card {
+        background: rgba(25, 25, 55, 0.75);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 107, 157, 0.2);
+        border-radius: 24px;
+        padding: 40px;
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 107, 157, 0.15);
+        color: white;
+    }
+
+    .val-to {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: #ff6b9d;
+        margin-bottom: 20px;
+    }
+
+    .val-quote {
+        font-family: 'Dancing Script', cursive;
+        font-size: 1.8rem;
+        margin-bottom: 30px;
+        color: rgba(255, 255, 255, 0.9);
+        line-height: 1.4;
+    }
+
+    .val-img {
+        max-width: 100%;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .val-question {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 30px;
+        color: #e0c3fc;
+    }
+
+    .val-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        position: relative;
+    }
+
+    .btn-yes {
+        background: linear-gradient(135deg, #ff6b9d, #c850c0);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        padding: 15px 40px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+    }
+
+    .btn-yes:hover {
+        transform: scale(1.1);
+        box-shadow: 0 10px 30px rgba(255, 107, 157, 0.6);
+    }
+
+    .btn-no {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 15px 40px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+    }
+
+    .hidden-form {
+        display: none;
+    }
+</style>
 {% endblock style %}
+
 {% block content %}
+<div class="val-container">
+    <div class="val-card">
+        <h1 class="val-to">Dear {{ data.name|default:"Valentine" }},</h1>
 
-<div class="create-container">
-    <div class="create-card">
-        <div class="create-header">
-            <div class="create-icon">
-                <i class="fa-solid fa-pen-to-square"></i>
-            </div>
-            <h2>Edit Your Card</h2>
-            <p class="create-subtitle">Update the details of your love card</p>
+        {% if data.image %}
+        <img src="{{ data.image.url }}" class="val-img" alt="Valentine Image">
+        {% endif %}
+
+        <p class="val-quote">"{{ data.quote|default:'Will you be my Valentine?' }}"</p>
+
+        {% if not data.status %}
+        <p class="val-question">Will you be my Valentine? 💖</p>
+        <div class="val-buttons" id="btn-container">
+            <form action="" method="post" id="yes-form">
+                {% csrf_token %}
+                <!-- We output the hidden form fields to satisfy Django's update view -->
+                <div class="hidden-form">
+                    {{ form }}
+                </div>
+                <!-- we will manually set status to True in JS before submit -->
+                <button type="submit" class="btn-yes" id="btn-yes">YES!</button>
+            </form>
+
+            <button type="button" class="btn-no" id="btn-no">No</button>
         </div>
-
-        <form action="" method="post" enctype="multipart/form-data" class="create-form">
-            {% csrf_token %}
-
-            {% for field in form %}
-            {% if field.is_hidden %}
-            {{ field }}
-            {% else %}
-            <div class="form-group">
-                <label for="{{ field.id_for_label }}" class="form-label">
-                    {% if 'name' in field.name %}
-                    <i class="fa-solid fa-heart"></i>
-                    {% elif 'quote' in field.name %}
-                    <i class="fa-solid fa-quote-left"></i>
-                    {% elif 'image' in field.name %}
-                    <i class="fa-solid fa-image"></i>
-                    {% elif 'status' in field.name %}
-                    <i class="fa-solid fa-check-circle"></i>
-                    {% else %}
-                    <i class="fa-solid fa-pen"></i>
-                    {% endif %}
-                    {{ field.label }}
-                </label>
-                {{ field }}
-            </div>
-            {% endif %}
-            {% endfor %}
-
-            <button type="submit" class="create-submit-btn">
-                <i class="fa-solid fa-floppy-disk"></i>
-                <span>Update Card</span>
-            </button>
-        </form>
+        {% else %}
+        <p class="val-question">Yay! You accepted! 🥰💖</p>
+        {% endif %}
     </div>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const noBtn = document.getElementById('btn-no');
+        const container = document.getElementById('btn-container');
+        const yesForm = document.getElementById('yes-form');
+
+        // Make the No button dodge the cursor
+        if (noBtn) {
+            noBtn.addEventListener('mouseover', () => {
+                const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
+                const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 50);
+
+                noBtn.style.position = 'fixed';
+                noBtn.style.left = `${x}px`;
+                noBtn.style.top = `${y}px`;
+                noBtn.style.zIndex = 9999;
+            });
+
+            // Just in case they click it before it dodges on mobile
+            noBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert("Are you sure? Try again! 😉");
+            });
+        }
+
+        if (yesForm) {
+            yesForm.addEventListener('submit', (e) => {
+                // Find the status checkbox in the hidden Django form and check it to True
+                const statusCheckbox = yesForm.querySelector('input[name="status"]');
+                if (statusCheckbox) {
+                    statusCheckbox.checked = true;
+                }
+            });
+        }
+    });
+</script>
 {% endblock content %}

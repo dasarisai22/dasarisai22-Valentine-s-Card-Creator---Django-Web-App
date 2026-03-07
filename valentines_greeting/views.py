@@ -70,9 +70,9 @@ def card_update (request,id):
     else:
         form=Cardform(instance=data)
     context = {
-        'title':'edit',
+        'title':'Your Love Card',
         'form':form,
-    
+        'data': data,
     }
     return render(request,'card_update.html',context)
 

@@ -1,0 +1,91 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/cards.css' %}?v=3">
+{% endblock style %}
+
+{% block content %}
+
+<div class="details">
+    <h1 class="details-title">
+        <i class="fa-solid fa-envelope-open-text"></i>
+        Your Love Cards
+    </h1>
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="card-message {% if message.tags == 'success' %}success{% else %}error{% endif %}">
+        <i
+            class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-triangle-exclamation{% endif %}"></i>
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if datas %}
+    <div class="cards-grid">
+        {% for data in datas %}
+        <div class="love-card">
+            <div class="love-card-header">
+                {% if data.status %}
+                <span class="status-badge accepted"><i class="fa-solid fa-heart"></i> Accepted</span>
+                {% elif data.propose_date == data.response_date %}
+                <span class="status-badge waiting"><i class="fa-solid fa-clock"></i> Waiting</span>
+                {% else %}
+                <span class="status-badge rejected"><i class="fa-solid fa-heart-crack"></i> Rejected</span>
+                {% endif %}
+            </div>
+
+            {% if data.image %}
+            <div class="love-card-image">
+                <img src="{{ data.image.url }}" alt="Card Image">
+            </div>
+            {% endif %}
+
+            <div class="love-card-body">
+                <p class="love-card-quote">"{{ data.quote }}"</p>
+                <h3 class="love-card-name"><i class="fa-solid fa-heart"></i> {{ data.name }}</h3>
+
+                <div class="love-card-dates">
+                    <div class="date-item">
+                        <i class="fa-solid fa-calendar-plus"></i>
+                        <span>{{ data.propose_date|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="date-item">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span>{{ data.response_date|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if not data.status %}
+            <div class="love-card-actions">
+                {% if data.propose_date == data.response_date %}
+                <a href="{% url 'card_update' data.id %}" class="action-btn edit-btn">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                </a>
+                {% endif %}
+                <a href="{% url 'card_delete' data.id %}" class="action-btn delete-btn">
+                    <i class="fa-solid fa-trash-can"></i> Delete
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">
+            <i class="fa-solid fa-heart-circle-plus"></i>
+        </div>
+        <h2>No Cards Yet</h2>
+        <p>Start by creating your first love card!</p>
+        <a href="{% url 'create_card' %}" class="create-btn">
+            <i class="fa-solid fa-plus"></i> Create Card
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock content %}

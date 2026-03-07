@@ -1,0 +1,35 @@
+{% load static %}
+<nav>
+    <div id="nav_list">
+        <a href="{% url 'home' %}" id="logo">
+            <div class="logo-icon">
+                <i class="fa-solid fa-heart-pulse"></i>
+            </div>
+            <h1><span id="oneword">Love</span><span id="twoword">Cards</span></h1>
+        </a>
+
+        <div id="hsign">
+            {% if user.is_authenticated %}
+            <li><a href="{% url 'home' %}" class="nav-link" title="Home Page"><i class="fa-solid fa-house"></i> Home</a>
+            </li>
+            <li><a href="{% url 'card_details' %}" class="nav-link" title="View Cards"><i
+                        class="fa-solid fa-envelope-open-text"></i> Cards</a></li>
+            <li class="user-welcome"><i class="fa-solid fa-circle-user"></i> <span>{{ user.username }}</span></li>
+            <li><a href="{% url 'logout' %}" class="nav-btn logout-nav-btn"><i
+                        class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+
+            {% else %}
+            {% if request.resolver_match.url_name == "signup" %}
+
+            {% elif request.resolver_match.url_name == "login" %}
+
+            {% else %}
+            <li><a href="{% url 'signup' %}" class="nav-btn signup-nav-btn"><i class="fa-solid fa-user-plus"></i> Sign
+                    Up</a></li>
+            <li><a href="{% url 'login' %}" class="nav-btn login-nav-btn"><i class="fa-solid fa-right-to-bracket"></i>
+                    Login</a></li>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</nav>

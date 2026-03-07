@@ -1,0 +1,507 @@
+/* ============================
+   AUTH PAGES - Login & Signup
+   ============================ */
+
+/* Auth Container */
+.auth-container {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+}
+
+/* Auth Card - Glassmorphism */
+.auth-card {
+    background: rgba(25, 25, 55, 0.75);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 107, 157, 0.15);
+    border-radius: 24px;
+    padding: 48px 40px 36px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        0 0 40px rgba(255, 107, 157, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    animation: cardSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes cardSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.97);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Auth Header */
+.auth-header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.auth-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #ff6b9d, #c850c0);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 26px;
+    color: white;
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.35);
+    animation: iconPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 8px 25px rgba(255, 107, 157, 0.35);
+    }
+
+    50% {
+        box-shadow: 0 8px 35px rgba(255, 107, 157, 0.5);
+    }
+}
+
+.auth-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff, #e0c3fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.45);
+    font-weight: 400;
+}
+
+/* Auth Form */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 0 !important;
+}
+
+/* Input Groups */
+.input-group {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.input-group:focus-within {
+    border-color: rgba(255, 107, 157, 0.4);
+    background: rgba(255, 107, 157, 0.04);
+    box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.08);
+}
+
+/* ============================
+   TOOLTIP POPUPS
+   ============================ */
+.field-tooltip {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px) scale(0.95);
+    width: 300px;
+    background: rgba(20, 20, 50, 0.95);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 107, 157, 0.2);
+    border-radius: 16px;
+    padding: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(255, 107, 157, 0.08);
+    overflow: hidden;
+}
+
+.field-tooltip.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
+}
+
+/* Tooltip Arrow */
+.tooltip-arrow {
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 14px;
+    height: 14px;
+    background: rgba(20, 20, 50, 0.95);
+    border-right: 1px solid rgba(255, 107, 157, 0.2);
+    border-bottom: 1px solid rgba(255, 107, 157, 0.2);
+}
+
+/* Tooltip Header */
+.tooltip-header {
+    background: linear-gradient(135deg, rgba(255, 107, 157, 0.15), rgba(200, 80, 192, 0.15));
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 107, 157, 0.1);
+}
+
+.tooltip-header i {
+    color: #ff6b9d;
+    font-size: 0.85rem;
+}
+
+.tooltip-header span {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+/* Tooltip Body */
+.tooltip-body {
+    padding: 14px 16px;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.6;
+}
+
+.tooltip-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tooltip-body ul li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 5px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border-left: 2px solid rgba(255, 107, 157, 0.4);
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.55);
+    transition: all 0.2s ease;
+}
+
+.tooltip-body ul li::before {
+    content: '\f058';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    color: rgba(255, 107, 157, 0.5);
+    font-size: 0.7rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.input-group:focus-within {
+    border-color: rgba(255, 107, 157, 0.4);
+    background: rgba(255, 107, 157, 0.04);
+    box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.08);
+}
+
+.input-icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    background: rgba(255, 107, 157, 0.1);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff6b9d;
+    font-size: 0.95rem;
+    margin-top: 2px;
+}
+
+/* Field Wrapper for signup form fields */
+.field-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.field-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.field-error {
+    font-size: 0.78rem;
+    color: #f87171;
+    line-height: 1.4;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.field-error i {
+    font-size: 0.7rem;
+}
+
+/* Input Styling */
+.auth-form input[type="text"],
+.auth-form input[type="password"],
+.auth-form input[type="email"],
+.field-wrapper input[type="text"],
+.field-wrapper input[type="password"] {
+    width: 100%;
+    padding: 10px 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.3s ease;
+    outline: none;
+}
+
+.auth-form input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+.auth-form input:focus,
+.field-wrapper input:focus {
+    border-bottom-color: #ff6b9d;
+}
+
+/* Labels inside form (Django default) */
+.auth-form label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 2px;
+}
+
+/* Submit Button */
+.auth-submit-btn {
+    width: 100%;
+    padding: 15px 24px;
+    background: linear-gradient(135deg, #ff6b9d, #c850c0);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3);
+    margin-top: 8px;
+    letter-spacing: 0.3px;
+}
+
+.auth-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(255, 107, 157, 0.45);
+}
+
+.auth-submit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(255, 107, 157, 0.35);
+}
+
+.auth-submit-btn i {
+    transition: transform 0.3s ease;
+}
+
+.auth-submit-btn:hover i {
+    transform: translateX(4px);
+}
+
+/* Auth Messages */
+.auth-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    animation: messageSlide 0.4s ease;
+}
+
+@keyframes messageSlide {
+    0% {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-message.success {
+    background: rgba(34, 197, 94, 0.12);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.auth-message.error {
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Auth Footer */
+.auth-footer {
+    text-align: center;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.auth-footer p {
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.auth-link {
+    color: #ff6b9d !important;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.auth-link:hover {
+    color: #ff8ec4 !important;
+    text-decoration: none !important;
+}
+
+.auth-link i {
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+}
+
+.auth-link:hover i {
+    transform: translateX(3px);
+}
+
+/* Floating Hearts Decoration */
+.auth-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.floating-heart {
+    position: absolute;
+    bottom: -30px;
+    left: var(--x, 50%);
+    font-size: var(--size, 16px);
+    color: rgba(255, 107, 157, 0.2);
+    animation: floatUp 8s ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(0.5);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    85% {
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translateY(-100vh) rotate(360deg) scale(1);
+        opacity: 0;
+    }
+}
+
+/* Django form p tags override */
+.auth-form p {
+    margin: 0;
+    text-align: left;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Override for Django's default form rendering */
+.auth-form p label {
+    display: block;
+    margin-bottom: 4px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 36px 24px 28px;
+        margin: 0 10px;
+    }
+
+    .auth-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .input-group {
+        padding: 12px 14px;
+    }
+}

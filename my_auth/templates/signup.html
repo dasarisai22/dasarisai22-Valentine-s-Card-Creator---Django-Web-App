@@ -1,0 +1,118 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block style %}
+<link rel="stylesheet" href="{% static 'css/signup.css' %}?v=5">
+{% endblock style %}
+{% block content %}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-icon">
+                <i class="fa-solid fa-user-plus"></i>
+            </div>
+            <h2>Create Account</h2>
+            <p class="auth-subtitle">Join us and start creating beautiful cards</p>
+        </div>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+
+            {% for field in form %}
+            <div class="input-group" id="group-{{ field.name }}">
+                <div class="input-icon">
+                    {% if 'username' in field.name %}
+                    <i class="fa-solid fa-user"></i>
+                    {% elif 'password' in field.name %}
+                    <i class="fa-solid fa-lock"></i>
+                    {% else %}
+                    <i class="fa-solid fa-pen"></i>
+                    {% endif %}
+                </div>
+                <div class="field-wrapper">
+                    <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    {% for error in field.errors %}
+                    <small class="field-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</small>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+
+                <!-- Tooltip popup for requirements -->
+                {% if field.help_text %}
+                <div class="field-tooltip" id="tooltip-{{ field.name }}">
+                    <div class="tooltip-arrow"></div>
+                    <div class="tooltip-header">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>Requirements</span>
+                    </div>
+                    <div class="tooltip-body">
+                        {{ field.help_text }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="auth-submit-btn">
+                <span>Sign Up</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="auth-message {% if message.tags == 'success' %}success{% else %}error{% endif %}">
+                <i
+                    class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-triangle-exclamation{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </form>
+
+        <div class="auth-footer">
+            <p>Already have an account? <a href="{% url 'login' %}" class="auth-link">Sign in <i
+                        class="fa-solid fa-arrow-right"></i></a></p>
+        </div>
+    </div>
+
+    <div class="auth-decoration">
+        <div class="floating-heart" style="--delay: 0s; --x: 25%; --size: 16px;"><i class="fa-solid fa-heart"></i></div>
+        <div class="floating-heart" style="--delay: 2s; --x: 55%; --size: 20px;"><i class="fa-solid fa-heart"></i></div>
+        <div class="floating-heart" style="--delay: 3.5s; --x: 75%; --size: 14px;"><i class="fa-solid fa-heart"></i>
+        </div>
+        <div class="floating-heart" style="--delay: 1s; --x: 45%; --size: 18px;"><i class="fa-solid fa-heart"></i></div>
+        <div class="floating-heart" style="--delay: 4s; --x: 15%; --size: 12px;"><i class="fa-solid fa-heart"></i></div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputGroups = document.querySelectorAll('.input-group');
+
+        inputGroups.forEach(function (group) {
+            const input = group.querySelector('input');
+            const tooltip = group.querySelector('.field-tooltip');
+
+            if (!input || !tooltip) return;
+
+            input.addEventListener('focus', function () {
+                // Close all other tooltips first
+                document.querySelectorAll('.field-tooltip.active').forEach(function (t) {
+                    if (t !== tooltip) t.classList.remove('active');
+                });
+                tooltip.classList.add('active');
+            });
+
+            input.addEventListener('blur', function () {
+                // Small delay so clicking on tooltip doesn't cause flicker
+                setTimeout(function () {
+                    tooltip.classList.remove('active');
+                }, 200);
+            });
+        });
+    });
+</script>
+
+{% endblock content %}

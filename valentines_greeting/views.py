@@ -24,14 +24,14 @@ def create_card(request):
         if form.is_valid():
             card = form.save(commit=False)
             
-            # Render Free Tier Workaround: Save the image file as a Base64 string directly in PostgreSQL
-            # This makes the image completely permanent even if the server restarts!
+            # Persist images as Base64 in DB (Render Free Tier Disk Workaround)
             if 'image' in request.FILES:
                 import base64
-                image_file = request.FILES['image']
-                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-                mime_type = image_file.content_type
-                card.image_base64 = f"data:{mime_type};base64,{encoded_string}"
+                img = request.FILES['image']
+                img.seek(0) # Ensure we read from the start
+                encoded = base64.b64encode(img.read()).decode('utf-8')
+                mime = img.content_type or 'image/jpeg'
+                card.image_base64 = f"data:{mime};base64,{encoded}"
                 
             card.save()
             messages.success(request, 'Card created successfully!')
@@ -74,26 +74,27 @@ def card_update (request,id):
         if form.is_valid():
             card = form.save(commit=False)
             
-            # If the logged in user IS the owner, they are using the Editor
-            # If NOT the owner (or not logged in), they are using the Experience
+            # Check if this is the owner editing, or a recipient responding
             is_owner = request.user.is_authenticated and data.user_id == request.user
             
             if not is_owner:
-                # Recipient logic: toggle status/rejection
+                # Recipient Response Logic
                 if 'status' in request.POST:
                     card.status = True
                     card.is_rejected = False
                 else:
+                    # Form submitted without 'status' checkbox means 'No' was clicked
                     card.is_rejected = True
                     card.status = False
             
-            # Save image as base64 if provided
+            # Preserve old base64 if no new image is uploaded
             if 'image' in request.FILES:
                 import base64
-                image_file = request.FILES['image']
-                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
-                mime_type = image_file.content_type
-                card.image_base64 = f"data:{mime_type};base64,{encoded_string}"
+                img = request.FILES['image']
+                img.seek(0)
+                encoded = base64.b64encode(img.read()).decode('utf-8')
+                mime = img.content_type or 'image/jpeg'
+                card.image_base64 = f"data:{mime};base64,{encoded}"
             
             card.save()
             messages.success(request, 'Card Updated!' if is_owner else 'Response recorded!')
@@ -101,7 +102,6 @@ def card_update (request,id):
     else:
         form = Cardform(instance=data)
     
-    # Determine which template to show
     is_owner = request.user.is_authenticated and data.user_id == request.user
     template = 'card_edit_editor.html' if is_owner else 'card_update.html'
     
@@ -110,7 +110,7 @@ def card_update (request,id):
         'form': form,
         'data': data,
     }
-    return render(request, template, context)
+    return render(request,template,context)
 
 def card_delete(request, id):
     card = get_object_or_404(Card, id=id, user_id=request.user)  

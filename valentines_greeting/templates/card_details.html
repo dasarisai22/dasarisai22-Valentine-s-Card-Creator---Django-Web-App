@@ -37,7 +37,11 @@
                 {% endif %}
             </div>
 
-            {% if data.image %}
+            {% if data.image_base64 %}
+            <div class="love-card-image">
+                <img src="{{ data.image_base64 }}" alt="Card Image">
+            </div>
+            {% elif data.image %}
             <div class="love-card-image">
                 <img src="{{ data.image.url }}" alt="Card Image">
             </div>

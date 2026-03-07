@@ -105,7 +105,9 @@
     <div class="val-card">
         <h1 class="val-to">Dear {{ data.name|default:"Valentine" }},</h1>
 
-        {% if data.image %}
+        {% if data.image_base64 %}
+        <img src="{{ data.image_base64 }}" class="val-img" alt="Valentine Image">
+        {% elif data.image %}
         <img src="{{ data.image.url }}" class="val-img" alt="Valentine Image">
         {% endif %}
 

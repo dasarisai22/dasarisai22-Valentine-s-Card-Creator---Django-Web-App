@@ -22,10 +22,18 @@ def create_card(request):
     if request.method == 'POST':
         form = Cardform(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            card = form.save(commit=False)
             
-            
-            
+            # Render Free Tier Workaround: Save the image file as a Base64 string directly in PostgreSQL
+            # This makes the image completely permanent even if the server restarts!
+            if 'image' in request.FILES:
+                import base64
+                image_file = request.FILES['image']
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                mime_type = image_file.content_type
+                card.image_base64 = f"data:{mime_type};base64,{encoded_string}"
+                
+            card.save()
             messages.success(request, 'Card created successfully!')
             return redirect('card_details')  
 
@@ -62,9 +70,17 @@ def card_update (request,id):
     except:
         return HttpResponse('data not found')
     if request.method == 'POST':
-        form = Cardform(request.POST,request.FILES,instance=data)
+        form = Cardform(request.POST, request.FILES, instance=data)
         if form.is_valid():
-            form.save()
+            card = form.save(commit=False)
+            if 'image' in request.FILES:
+                import base64
+                image_file = request.FILES['image']
+                encoded_string = base64.b64encode(image_file.read()).decode('utf-8')
+                mime_type = image_file.content_type
+                card.image_base64 = f"data:{mime_type};base64,{encoded_string}"
+            card.save()
+
             messages.success(request, 'Card Updated successfully!')
             return redirect('card_details')
     else:

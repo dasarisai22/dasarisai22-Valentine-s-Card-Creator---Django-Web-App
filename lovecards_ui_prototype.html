@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -319,7 +318,6 @@
             font-weight: 400;
             font-size: 0.95rem;
             transition: all 0.3s ease;
-            cursor: none;
         }
 
         .nav-link svg {
@@ -379,7 +377,6 @@
             font-weight: 500;
             font-size: 0.95rem;
             transition: all 0.3s ease;
-            cursor: none;
         }
 
         .logout-btn svg {
@@ -1048,19 +1045,18 @@
     <!-- Navbar -->
     <nav class="navbar interactable">
         <div class="nav-left">
-            <a href="{% url 'home' %}" class="brand-icon">💝</a>
+            <a href="#" class="brand-icon">💝</a>
             <div class="brand-name"><span class="love">Love</span><span class="cards">Cards</span></div>
         </div>
         <div class="nav-right">
-            {% if user.is_authenticated %}
-            <a href="{% url 'home' %}" class="nav-link interactable">
+            <a href="#" class="nav-link interactable">
                 <svg viewBox="0 0 24 24">
                     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                     <polyline points="9 22 9 12 15 12 15 22"></polyline>
                 </svg>
                 Home
             </a>
-            <a href="{% url 'card_details' %}" class="nav-link interactable">
+            <a href="#" class="nav-link interactable">
                 <svg viewBox="0 0 24 24">
                     <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                     <line x1="8" y1="21" x2="16" y2="21"></line>
@@ -1070,30 +1066,21 @@
             </a>
             <div class="nav-divider"></div>
             <div class="user-pill interactable">
-                <div class="avatar-circle">{{ user.username.0|upper }}</div>
-                {{ user.username }}
+                <div class="avatar-circle">A</div>
+                akhil
             </div>
-            <a href="{% url 'logout' %}" class="logout-btn interactable">
+            <a href="#" class="logout-btn interactable">
                 Sign Out
                 <svg viewBox="0 0 24 24">
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                     <polyline points="12 5 19 12 12 19"></polyline>
                 </svg>
             </a>
-            {% else %}
-            <a href="{% url 'login' %}" class="nav-link interactable">
-                Login
-            </a>
-            <a href="{% url 'signup' %}" class="logout-btn interactable">
-                Sign Up
-            </a>
-            {% endif %}
         </div>
     </nav>
 
     <!-- Main Content -->
     <main class="main-content">
-        {% if user.is_authenticated %}
         <!-- Hero -->
         <section class="hero-section">
             <div class="eyebrow-badge anim-rise">
@@ -1101,7 +1088,7 @@
                 Your romantic dashboard
             </div>
             <div class="hello-line anim-rise">
-                Hello, <strong>{{ user.username }}</strong> 👋
+                Hello, <strong>akhilreddy123</strong> 👋
             </div>
             <h1 class="main-title anim-rise">
                 <span class="line-1">Welcome to your</span>
@@ -1121,14 +1108,14 @@
         <!-- Cards Grid -->
         <div class="cards-grid">
             <!-- Card 1 -->
-            <div class="action-card card-1 interactable" onclick="window.location.href='{% url 'create_card' %}'">
+            <div class="action-card card-1 interactable">
                 <div class="card-number">01</div>
                 <div class="card-icon">✍️</div>
                 <div class="card-tag">New card</div>
                 <h3 class="card-title">Create a Greeting Card</h3>
                 <p class="card-desc">Design a heartfelt, animated love card for your special one. Add their name, a
                     personal quote, and a photo.</p>
-                <a href="{% url 'create_card' %}" class="card-btn interactable">
+                <a href="#" class="card-btn interactable">
                     Create Now <span class="arrow">→</span>
                 </a>
                 <div class="card-meta">
@@ -1137,71 +1124,69 @@
             </div>
 
             <!-- Card 2 -->
-            <div class="action-card card-2 interactable" onclick="window.location.href='{% url 'card_details' %}'">
+            <div class="action-card card-2 interactable">
                 <div class="card-number">02</div>
                 <div class="card-icon">💌</div>
                 <div class="card-tag">Dashboard</div>
                 <h3 class="card-title">View Your Cards</h3>
                 <p class="card-desc">See all the beautiful cards you've crafted. Track responses — accepted, waiting, or
                     declined — in one place.</p>
-                <a href="{% url 'card_details' %}" class="card-btn interactable">
+                <a href="#" class="card-btn interactable">
                     View Cards <span class="arrow">→</span>
                 </a>
                 <div class="card-meta">
-                    <div class="meta-dot"></div> Keep track of your love notes
+                    <div class="meta-dot"></div> 3 cards — 1 awaiting response
                 </div>
             </div>
 
             <!-- Card 3 -->
-            <div class="action-card card-3 interactable" onclick="window.location.href='{% url 'logout' %}'">
+            <div class="action-card card-3 interactable">
                 <div class="card-number">03</div>
                 <div class="card-icon">🔒</div>
                 <div class="card-tag">Account</div>
                 <h3 class="card-title">Sign Out Securely</h3>
                 <p class="card-desc">Your cards and memories are saved safely. Sign out when you're done — everything
                     will be here when you return.</p>
-                <a href="{% url 'logout' %}" class="card-btn interactable">
+                <a href="#" class="card-btn interactable">
                     Logout <span class="arrow">→</span>
                 </a>
                 <div class="card-meta">
-                    <div class="meta-dot"></div> Securely end your session
+                    <div class="meta-dot"></div> Session started today at 9:42 AM
                 </div>
             </div>
         </div>
 
-        {% else %}
-        <!-- Generic Hero for non-logged-in users -->
-        <section class="hero-section" style="margin-top: 15vh;">
-            <div class="eyebrow-badge anim-rise">
-                <div class="blink-dot"></div>
-                Welcome to LoveCards
+        <!-- Stats Strip -->
+        <div class="stats-strip">
+            <div class="stat-cell interactable">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Cards Created</div>
             </div>
-            <h1 class="main-title anim-rise">
-                <span class="line-1">A Digital Symphony</span>
-                <span class="line-2">of Romance</span>
-            </h1>
-            <p class="hero-desc anim-rise"
-                style="max-width: 600px; font-style: italic; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem;">
-                "In the stillness of night, your laughter becomes a celestial symphony echoing in the chambers of my
-                soul.
-                In the golden embrace of the sun, your love envelops me like an eternal flame. You are not just a
-                fleeting
-                moment—you are a melody etched in time..."
-            </p>
-            <div class="decorative-divider anim-rise">
-                <div class="div-line"></div>
-                <div class="div-heart">♥</div>
-                <div class="div-line"></div>
+            <div class="stat-cell interactable">
+                <div class="stat-number">2</div>
+                <div class="stat-label">Accepted ❤️</div>
             </div>
-            <div class="anim-rise" style="animation-delay: 0.5s;">
-                <a href="{% url 'signup' %}" class="card-btn interactable"
-                    style="background: linear-gradient(135deg, var(--primary-accent), var(--deep-accent)); color: white; display: inline-flex; align-items: center; justify-content: center; padding: 13px 26px; border-radius: 12px; font-weight: 500; font-size: 0.95rem; cursor: none;">
-                    Get Started <span class="arrow">→</span>
-                </a>
+            <div class="stat-cell interactable">
+                <div class="stat-number">1</div>
+                <div class="stat-label">Awaiting Reply</div>
             </div>
-        </section>
-        {% endif %}
+            <div class="stat-cell interactable">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Love Rate</div>
+            </div>
+        </div>
     </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <div class="toast-icon">💌</div>
+        <div class="toast-content">
+            <div class="toast-title">Sofia accepted your card!</div>
+            <div class="toast-subtitle">She said yes ❤️ — just now</div>
+        </div>
+        <button class="toast-close interactable"
+            onclick="document.getElementById('toast').classList.remove('show')">✕</button>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -1296,6 +1281,15 @@
                 card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)`;
             });
         });
+
+        // Toast Notification Auto-show
+        setTimeout(() => {
+            document.getElementById('toast').classList.add('show');
+            setTimeout(() => {
+                document.getElementById('toast').classList.remove('show');
+            }, 5000); // dismiss after 5s
+        }, 2200);
+
     </script>
 </body>
 

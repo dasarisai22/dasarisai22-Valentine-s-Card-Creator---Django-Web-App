@@ -1,121 +1,1605 @@
-{% extends 'index.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block style %}
-<link rel="stylesheet" href="{% static 'css/cards.css' %}?v=3">
-{% endblock style %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Love Cards Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --rose: #e8607a;
+            --rose-bright: #ff7b94;
+            --rose-deep: #b8394f;
+            --blush: #ffd6de;
+            --wine: #5c1627;
+            --gold: #c9956a;
+            --gold-soft: #e8c9a8;
+            --midnight: #0c0610;
+            --deep: #130818;
+            --surface: rgba(255, 255, 255, 0.055);
+            --border: rgba(255, 255, 255, 0.11);
+            --border-rose: rgba(232, 96, 122, 0.28);
+            --txt: rgba(255, 255, 255, 0.90);
+            --txt-muted: rgba(255, 255, 255, 0.42);
+            --txt-dim: rgba(255, 255, 255, 0.22);
+        }
 
-{% block content %}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
 
-<div class="details">
-    <h1 class="details-title">
-        <i class="fa-solid fa-envelope-open-text"></i>
-        Your Love Cards
-    </h1>
+        body {
+            background: var(--midnight);
+            color: var(--txt);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-    {% if messages %}
-    {% for message in messages %}
-    <div class="card-message {% if message.tags == 'success' %}success{% else %}error{% endif %}">
-        <i
-            class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-triangle-exclamation{% endif %}"></i>
-        {{ message }}
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Layers */
+        .layer-1 {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: var(--deep);
+        }
+
+        .layer-1::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 55% at 15% 5%, rgba(92, 22, 39, 0.70), transparent 65%), radial-gradient(ellipse 50% 45% at 88% 15%, rgba(184, 57, 79, 0.22), transparent 60%), radial-gradient(ellipse 60% 50% at 50% 100%, rgba(92, 22, 39, 0.45), transparent 65%), radial-gradient(ellipse 35% 35% at 80% 70%, rgba(201, 149, 106, 0.10), transparent 60%);
+        }
+
+        .layer-2 {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            filter: blur(90px);
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .orb-1 {
+            width: 520px;
+            height: 520px;
+            top: -160px;
+            left: -160px;
+            background: radial-gradient(circle, rgba(184, 57, 79, 0.28), transparent 70%);
+            animation: orbDrift 14s ease-in-out infinite alternate;
+        }
+
+        .orb-2 {
+            width: 380px;
+            height: 380px;
+            bottom: -100px;
+            right: -80px;
+            background: radial-gradient(circle, rgba(92, 22, 39, 0.40), transparent 70%);
+            animation: orbDrift 18s ease-in-out infinite alternate;
+            animation-delay: -6s;
+        }
+
+        .orb-3 {
+            width: 260px;
+            height: 260px;
+            top: 45%;
+            left: 55%;
+            background: radial-gradient(circle, rgba(201, 149, 106, 0.14), transparent 70%);
+            animation: orbDrift 22s ease-in-out infinite alternate;
+            animation-delay: -10s;
+        }
+
+        @keyframes orbDrift {
+            from {
+                transform: translate(0, 0) scale(1);
+            }
+
+            to {
+                transform: translate(30px, 40px) scale(1.12);
+            }
+        }
+
+        .layer-3 {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.028;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 200px;
+            repeat: repeat;
+        }
+
+        #particles,
+        #petals {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            bottom: -10px;
+        }
+
+        @keyframes pRise {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) translateX(var(--drift));
+                opacity: 0;
+            }
+        }
+
+        .petal {
+            position: absolute;
+            width: 7px;
+            height: 11px;
+            border-radius: 0 50% 50% 0 / 40% 50% 50% 40%;
+            background: radial-gradient(ellipse at 35% 25%, rgba(232, 96, 122, 0.65), rgba(184, 57, 79, 0.15));
+            top: -20px;
+        }
+
+        @keyframes pFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(108vh) rotate(540deg);
+                opacity: 0;
+            }
+        }
+
+        /* Cursor */
+        #c-dot {
+            position: fixed;
+            width: 9px;
+            height: 9px;
+            background: var(--rose-bright);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s;
+        }
+
+        #c-ring {
+            position: fixed;
+            width: 38px;
+            height: 38px;
+            border: 1.5px solid rgba(232, 96, 122, 0.45);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9998;
+            transition: width 0.3s, height 0.3s;
+        }
+
+        body.hover #c-dot {
+            transform: translate(-50%, -50%) scale(2);
+        }
+
+        body.hover #c-ring {
+            width: 52px;
+            height: 52px;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 68px;
+            background: rgba(12, 6, 16, 0.72);
+            backdrop-filter: blur(20px) saturate(1.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 48px;
+            z-index: 500;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+            box-shadow: 0 4px 20px rgba(232, 96, 122, 0.40);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: 0.3s;
+        }
+
+        .nav-left:hover .brand-icon {
+            transform: scale(1.1) rotate(-5deg);
+            box-shadow: 0 6px 28px rgba(232, 96, 122, 0.60);
+        }
+
+        .brand-txt {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            font-size: 1.55rem;
+        }
+
+        .brand-txt .love {
+            font-style: italic;
+            color: var(--rose-bright);
+        }
+
+        .brand-txt .cards {
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-family: 'Outfit';
+            font-weight: 400;
+            font-size: 0.82rem;
+            color: var(--txt-muted);
+            transition: 0.3s;
+            cursor: none;
+        }
+
+        .nav-link svg {
+            width: 15px;
+            height: 15px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-link.active {
+            color: var(--rose-bright);
+            background: rgba(232, 96, 122, 0.08);
+        }
+
+        .nav-div {
+            width: 1px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.08);
+            margin: 0 8px;
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 14px 6px 8px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            font-family: 'Outfit';
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .user-av {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--rose), var(--wine));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+        }
+
+        .btn-log {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 20px;
+            border-radius: 10px;
+            background: rgba(232, 96, 122, 0.12);
+            border: 1px solid var(--border-rose);
+            color: var(--rose-bright);
+            font-family: 'Outfit';
+            font-weight: 500;
+            font-size: 0.82rem;
+            transition: 0.3s;
+            cursor: none;
+        }
+
+        .btn-log svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .btn-log:hover {
+            background: rgba(232, 96, 122, 0.22);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 18px rgba(232, 96, 122, 0.2);
+        }
+
+        /* Layout */
+        .wrapper {
+            padding-top: 68px;
+            min-height: 100vh;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 60px 32px 100px;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        @keyframes riseIn {
+            from {
+                opacity: 0;
+                transform: translateY(32px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 52px;
+            animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .h-left .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 30px;
+            background: rgba(232, 96, 122, 0.10);
+            border: 1px solid rgba(232, 96, 122, 0.22);
+            font-family: 'Outfit';
+            font-weight: 500;
+            font-size: 0.72rem;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--rose-bright);
+            margin-bottom: 18px;
+        }
+
+        .eyebrow .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.3;
+                transform: scale(0.5);
+            }
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-family: 'Cormorant Garamond';
+            font-weight: 300;
+            font-size: clamp(2.4rem, 4.5vw, 3.6rem);
+            line-height: 1.1;
+        }
+
+        .t-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(232, 96, 122, 0.22), rgba(184, 57, 79, 0.14));
+            border: 1px solid rgba(232, 96, 122, 0.25);
+            box-shadow: 0 6px 24px rgba(232, 96, 122, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .t-txt {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .t-txt i {
+            font-style: italic;
+            background: linear-gradient(135deg, var(--blush) 0%, var(--rose) 45%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .h-sub {
+            font-family: 'Outfit';
+            font-weight: 300;
+            font-size: 0.9rem;
+            color: var(--txt-muted);
+            line-height: 1.7;
+            margin-top: 12px;
+        }
+
+        .btn-create {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 28px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+            font-family: 'Outfit';
+            font-weight: 500;
+            font-size: 0.88rem;
+            color: #fff;
+            letter-spacing: 0.04em;
+            box-shadow: 0 6px 28px rgba(232, 96, 122, 0.35);
+            transition: 0.3s;
+            cursor: none;
+        }
+
+        .btn-create svg {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .btn-create:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 36px rgba(232, 96, 122, 0.52);
+        }
+
+        /* Filter Row */
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+        }
+
+        .f-tabs {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 5px;
+        }
+
+        .f-tab {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 22px;
+            border-radius: 10px;
+            font-family: 'Outfit';
+            font-size: 0.80rem;
+            color: var(--txt-muted);
+            background: transparent;
+            border: none;
+            transition: 0.3s;
+            cursor: none;
+        }
+
+        .f-tab .f-count {
+            font-size: 0.68rem;
+            padding: 2px 7px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--txt-dim);
+            transition: 0.3s;
+        }
+
+        .f-tab:hover {
+            color: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .f-tab.active {
+            color: #fff;
+            background: rgba(232, 96, 122, 0.20);
+            box-shadow: 0 2px 12px rgba(232, 96, 122, 0.15);
+        }
+
+        .f-tab.active .f-count {
+            background: rgba(232, 96, 122, 0.25);
+            color: var(--blush);
+        }
+
+        .f-sort {
+            padding: 9px 16px;
+            padding-right: 32px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            color: var(--txt-muted);
+            font-family: 'Outfit';
+            font-size: 0.80rem;
+            appearance: none;
+            outline: none;
+            cursor: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.42)' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 14px;
+        }
+
+        .f-sort option {
+            background: #130818;
+            color: white;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            padding-bottom: 64px;
+        }
+
+        @keyframes cardRise {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .card {
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.042);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            backdrop-filter: blur(18px) saturate(1.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: border-color 0.4s;
+            animation: cardRise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        .card:hover {
+            border-color: rgba(232, 96, 122, 0.22);
+            box-shadow: 0 28px 64px rgba(0, 0, 0, 0.50), 0 0 0 1px rgba(255, 255, 255, 0.07);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(232, 96, 122, 0.7), transparent);
+            opacity: 0;
+            transition: 0.4s;
+            z-index: 10;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        /* Status Badges */
+        .badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            z-index: 5;
+            padding: 5px 13px;
+            border-radius: 30px;
+            font-family: 'Outfit';
+            font-weight: 600;
+            font-size: 0.68rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .b-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .b-acc {
+            background: rgba(60, 200, 120, 0.18);
+            border: 1px solid rgba(60, 200, 120, 0.35);
+            color: #6eeaaa;
+            box-shadow: 0 4px 16px rgba(60, 200, 120, 0.18);
+        }
+
+        .b-acc .b-dot {
+            background: #6eeaaa;
+            box-shadow: 0 0 6px rgba(110, 234, 170, 0.8);
+            animation: blink 2s infinite;
+        }
+
+        .b-wat {
+            background: rgba(201, 149, 106, 0.18);
+            border: 1px solid rgba(201, 149, 106, 0.32);
+            color: #e8c9a8;
+            box-shadow: 0 4px 16px rgba(201, 149, 106, 0.14);
+        }
+
+        .b-wat .b-dot {
+            background: #c9956a;
+            box-shadow: 0 0 6px rgba(201, 149, 106, 0.8);
+            animation: blink 2.5s infinite;
+        }
+
+        .b-dec {
+            background: rgba(220, 80, 80, 0.16);
+            border: 1px solid rgba(220, 80, 80, 0.30);
+            color: #f09090;
+            box-shadow: 0 4px 16px rgba(220, 80, 80, 0.14);
+        }
+
+        .b-dec .b-dot {
+            background: #f09090;
+        }
+
+        /* Photo Area */
+        .photo-area {
+            height: 210px;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .photo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.88) saturate(1.1);
+            transition: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .card:hover .photo-img {
+            transform: scale(1.06);
+            filter: brightness(0.95) saturate(1.2);
+        }
+
+        .photo-area::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to top, rgba(12, 6, 16, 0.85) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .no-photo {
+            background: linear-gradient(135deg, rgba(92, 22, 39, 0.5), rgba(26, 10, 18, 0.8));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .np-emo {
+            font-size: 3rem;
+            opacity: 0.4;
+        }
+
+        .np-txt {
+            font-size: 0.72rem;
+            color: var(--txt-dim);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-family: 'Outfit';
+        }
+
+        /* Card Body */
+        .c-body {
+            padding: 22px 26px 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            pointer-events: none;
+        }
+
+        .c-quote {
+            font-family: 'Cormorant Garamond';
+            font-style: italic;
+            font-weight: 300;
+            font-size: 1.05rem;
+            color: rgba(255, 255, 255, 0.65);
+            line-height: 1.65;
+            padding-left: 14px;
+            border-left: 2px solid rgba(232, 96, 122, 0.35);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 18px;
+        }
+
+        .c-rec {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .c-heart {
+            color: var(--rose-bright);
+            font-size: 1rem;
+            animation: heartbeat 1.8s infinite;
+        }
+
+        @keyframes heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            20% {
+                transform: scale(1.3);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+
+            55% {
+                transform: scale(1.15);
+            }
+        }
+
+        .c-name {
+            font-family: 'Cormorant Garamond';
+            font-style: italic;
+            font-weight: 400;
+            font-size: 1.3rem;
+            color: var(--blush);
+        }
+
+        .card[data-status="declined"] .c-heart {
+            color: rgba(255, 140, 140, 0.5);
+            animation: none;
+        }
+
+        .card[data-status="declined"] .c-name {
+            color: rgba(255, 200, 200, 0.5);
+        }
+
+        .c-dates {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .c-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .c-date svg {
+            width: 12px;
+            height: 12px;
+            opacity: 0.5;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .cd-lbl {
+            font-family: 'Outfit';
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .cd-val {
+            font-family: 'Outfit';
+            font-size: 0.75rem;
+            color: var(--txt-muted);
+        }
+
+        /* Card Actions */
+        .c-acts {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            pointer-events: all;
+        }
+
+        .c-btn {
+            flex: 1;
+            padding: 11px 16px;
+            border-radius: 11px;
+            font-family: 'Outfit';
+            font-weight: 500;
+            font-size: 0.78rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: 0.3s;
+            cursor: none;
+            border: none;
+            outline: none;
+        }
+
+        .c-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .cb-share {
+            background: rgba(232, 96, 122, 0.12);
+            border: 1px solid rgba(232, 96, 122, 0.24);
+            color: var(--rose-bright);
+        }
+
+        .cb-share:hover {
+            background: rgba(232, 96, 122, 0.22);
+            transform: translateY(-2px);
+        }
+
+        .cb-del {
+            background: rgba(220, 70, 80, 0.10);
+            border: 1px solid rgba(220, 70, 80, 0.22);
+            color: rgba(255, 140, 140, 0.80);
+        }
+
+        .cb-del:hover {
+            background: rgba(220, 70, 80, 0.20);
+            transform: translateY(-2px);
+        }
+
+        .cb-view {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border-radius: 11px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            color: var(--txt-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            cursor: none;
+        }
+
+        .cb-view svg {
+            width: 15px;
+            height: 15px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .cb-view:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        /* Add Tile */
+        .add-tile {
+            border-radius: 24px;
+            min-height: 380px;
+            border: 1.5px dashed rgba(232, 96, 122, 0.22);
+            background: rgba(232, 96, 122, 0.03);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            cursor: none;
+            animation: cardRise 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+            transition: 0.3s;
+        }
+
+        .add-tile:hover {
+            border-color: rgba(232, 96, 122, 0.50);
+            background: rgba(232, 96, 122, 0.07);
+            transform: translateY(-6px);
+        }
+
+        .a-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
+            background: rgba(232, 96, 122, 0.12);
+            border: 1px solid rgba(232, 96, 122, 0.22);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: var(--rose-bright);
+            transition: 0.4s;
+        }
+
+        .add-tile:hover .a-icon {
+            transform: scale(1.12) rotate(-5deg);
+            box-shadow: 0 0 15px rgba(232, 96, 122, 0.3);
+        }
+
+        .a-lbl {
+            font-family: 'Cormorant Garamond';
+            font-style: italic;
+            font-size: 1.2rem;
+            color: rgba(232, 96, 122, 0.55);
+        }
+
+        .a-sub {
+            font-family: 'Outfit';
+            font-size: 0.75rem;
+            color: var(--txt-dim);
+            letter-spacing: 0.06em;
+        }
+
+        /* Stats Strip */
+        .stats {
+            margin-top: 64px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            display: flex;
+            overflow: hidden;
+            animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.8s both;
+        }
+
+        .stat {
+            flex: 1;
+            padding: 28px 0;
+            text-align: center;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.3s;
+        }
+
+        .stat:last-child {
+            border-right: none;
+        }
+
+        .stat:hover {
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        .s-num {
+            font-family: 'Cormorant Garamond';
+            font-weight: 300;
+            font-style: italic;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #fff, var(--blush));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .s-lbl {
+            font-family: 'Outfit';
+            font-size: 0.68rem;
+            color: var(--txt-dim);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        /* Modal */
+        .modal-ov {
+            position: fixed;
+            inset: 0;
+            z-index: 800;
+            background: rgba(8, 4, 12, 0.75);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-ov.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal {
+            background: rgba(18, 8, 22, 0.96);
+            border: 1px solid rgba(232, 96, 122, 0.22);
+            border-radius: 24px;
+            padding: 44px 40px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.6);
+            transform: translateY(24px) scale(0.96);
+            transition: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-ov.show .modal {
+            transform: translateY(0) scale(1);
+        }
+
+        .m-emo {
+            font-size: 2.8rem;
+            margin-bottom: 18px;
+        }
+
+        .m-tit {
+            font-family: 'Cormorant Garamond';
+            font-weight: 300;
+            font-style: italic;
+            font-size: 1.6rem;
+            margin-bottom: 12px;
+            color: white;
+        }
+
+        .m-bod {
+            font-family: 'Outfit';
+            font-weight: 300;
+            font-size: 0.85rem;
+            color: var(--txt-muted);
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+
+        .m-acts {
+            display: flex;
+            gap: 12px;
+        }
+
+        .mb-gho {
+            flex: 1;
+            padding: 13px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-family: 'Outfit';
+            font-size: 0.88rem;
+            color: var(--txt-muted);
+            cursor: none;
+            transition: 0.3s;
+        }
+
+        .mb-gho:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        .mb-dan {
+            flex: 1;
+            padding: 13px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(200, 60, 70, 0.4), rgba(160, 40, 50, 0.35));
+            border: 1px solid rgba(220, 80, 80, 0.35);
+            font-family: 'Outfit';
+            font-size: 0.88rem;
+            color: rgba(255, 160, 160, 0.9);
+            cursor: none;
+            transition: 0.3s;
+        }
+
+        .mb-dan:hover {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, rgba(200, 60, 70, 0.5), rgba(160, 40, 50, 0.45));
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 600;
+            background: rgba(18, 8, 22, 0.95);
+            border: 1px solid rgba(232, 96, 122, 0.38);
+            border-radius: 16px;
+            padding: 16px 22px;
+            backdrop-filter: blur(24px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+            max-width: 320px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            opacity: 0;
+            transform: translateY(80px) scale(0.95);
+            transition: 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: all;
+        }
+
+        .t-emo {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+
+        .t-col {
+            flex-grow: 1;
+        }
+
+        .t-ti {
+            font-family: 'Cormorant Garamond';
+            font-style: italic;
+            font-size: 0.95rem;
+            color: var(--blush);
+        }
+
+        .t-su {
+            font-family: 'Outfit';
+            font-size: 0.74rem;
+            color: var(--txt-muted);
+            margin-top: 2px;
+        }
+
+        .t-close {
+            cursor: none;
+            color: var(--txt-muted);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 36px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Outfit';
+            font-size: 0.85rem;
+            color: var(--txt-dim);
+            text-align: center;
+        }
+
+        .fot-b {
+            font-family: 'Cormorant Garamond';
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--rose);
+        }
+
+        @media(max-width:768px) {
+
+            .page-header,
+            .filters {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .stats {
+                flex-direction: column;
+            }
+
+            .stat {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Layers -->
+    <div class="layer-1"></div>
+    <div class="layer-2">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
     </div>
-    {% endfor %}
-    {% endif %}
+    <div class="layer-3"></div>
+    <div id="particles"></div>
+    <div id="petals"></div>
 
-    {% if datas %}
-    <div class="cards-grid">
-        {% for data in datas %}
-        <div class="love-card">
-            <div class="love-card-header">
-                {% if data.status %}
-                <span class="status-badge accepted"><i class="fa-solid fa-heart"></i> Accepted</span>
-                {% elif data.is_rejected %}
-                <span class="status-badge rejected"><i class="fa-solid fa-heart-crack"></i> Rejected</span>
-                {% else %}
-                <span class="status-badge waiting"><i class="fa-solid fa-clock"></i> Waiting</span>
-                {% endif %}
-            </div>
+    <!-- Cursor -->
+    <div id="c-dot"></div>
+    <div id="c-ring"></div>
 
-            {% if data.image_base64 %}
-            <div class="love-card-image">
-                <img src="{{ data.image_base64|safe }}" alt="Card Image">
+    <!-- Navbar -->
+    <nav class="navbar interact">
+        <a href="{% url 'home' %}" class="nav-left">
+            <div class="brand-icon">💝</div>
+            <div class="brand-txt"><span class="love">Love</span><span class="cards">Cards</span></div>
+        </a>
+        <div class="nav-right">
+            <a href="{% url 'home' %}" class="nav-link interact">
+                <svg viewBox="0 0 24 24">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                Home
+            </a>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'card_details' %}" class="nav-link active interact">
+                <svg viewBox="0 0 24 24">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+                Cards
+            </a>
+            <div class="nav-div"></div>
+            <div class="user-pill">
+                <div class="user-av">{{ request.user.username|make_list|first|upper }}</div>
+                {{ request.user.username }}
             </div>
-            {% elif data.image %}
-            <div class="love-card-image">
-                <img src="{{ data.image.url }}" alt="Card Image">
-            </div>
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn-log interact">
+                    Logout
+                    <svg viewBox="0 0 24 24">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+            </form>
             {% endif %}
+        </div>
+    </nav>
 
-            <div class="love-card-body">
-                <p class="love-card-quote">"{{ data.quote }}"</p>
-                <h3 class="love-card-name"><i class="fa-solid fa-heart"></i> {{ data.name }}</h3>
-
-                <div class="love-card-dates">
-                    <div class="date-item">
-                        <i class="fa-solid fa-calendar-plus"></i>
-                        <span>{{ data.propose_date|date:"M d, Y" }}</span>
+    <div class="wrapper">
+        <div class="inner">
+            <!-- Header -->
+            <div class="page-header">
+                <div class="h-left">
+                    <div class="eyebrow">
+                        <div class="dot"></div> Your collection
                     </div>
-                    <div class="date-item">
-                        <i class="fa-solid fa-calendar-check"></i>
-                        <span>{{ data.response_date|date:"M d, Y" }}</span>
+                    <div class="title-row">
+                        <div class="t-icon">💌</div>
+                        <div class="t-txt"><span class="plain">Your </span><i>Love Cards</i></div>
                     </div>
+                    <div class="h-sub">Every card you've crafted — track responses and share with your special someone.
+                    </div>
+                </div>
+                <div class="h-right">
+                    <a href="{% url 'create_card' %}" class="btn-create interact">
+                        <svg viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Create New Card
+                    </a>
                 </div>
             </div>
 
-            <div class="love-card-actions">
-                {% if not data.status %}
-                <a href="{% url 'card_update' data.id %}" class="action-btn edit-btn">
-                    <i class="fa-solid fa-pen-to-square"></i> Edit
-                </a>
-                <button onclick="shareCard('{{ data.id }}')" class="action-btn share-btn"
-                    style="background: rgba(59, 130, 246, 0.12); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.2);">
-                    <i class="fa-solid fa-share-nodes"></i> Share
-                </button>
+            <!-- Precompute Stats via Django for true display -->
+            {% if request.user.is_authenticated %}
+            {% with total=datas|length %}
+            <!-- Very rough simulation of grouping natively in template (since logic shouldn't run db queries in template, we rely on JS for precise counting) -->
+            <div class="filters">
+                <div class="f-tabs">
+                    <button class="f-tab active interact" onclick="setFilter(this, 'all')">All Cards <span
+                            class="f-count" id="c-all">{{ total }}</span></button>
+                    <button class="f-tab interact" onclick="setFilter(this, 'accepted')">❤️ Accepted <span
+                            class="f-count" id="c-acc">0</span></button>
+                    <button class="f-tab interact" onclick="setFilter(this, 'waiting')">⏳ Waiting <span class="f-count"
+                            id="c-wat">0</span></button>
+                    <button class="f-tab interact" onclick="setFilter(this, 'declined')">💔 Declined <span
+                            class="f-count" id="c-dec">0</span></button>
+                </div>
+                <select class="f-sort interact">
+                    <option>Newest first</option>
+                    <option>Oldest first</option>
+                    <option>By status</option>
+                </select>
+            </div>
+            {% endwith %}
+            {% endif %}
+
+            <!-- Grid -->
+            <div class="grid">
+                {% if datas %}
+                {% for data in datas %}
+                <div class="card card-js interact"
+                    data-status="{% if data.status %}accepted{% elif data.is_rejected %}declined{% else %}waiting{% endif %}"
+                    style="animation-delay: 0.{{ forloop.counter|add:20 }}s;">
+
+                    <!-- Badge -->
+                    {% if data.status %}
+                    <div class="badge b-acc">
+                        <div class="b-dot"></div> Accepted
+                    </div>
+                    {% elif data.is_rejected %}
+                    <div class="badge b-dec">
+                        <div class="b-dot"></div> Declined
+                    </div>
+                    {% else %}
+                    <div class="badge b-wat">
+                        <div class="b-dot"></div> Waiting
+                    </div>
+                    {% endif %}
+
+                    <!-- Photo -->
+                    <div class="photo-area {% if not data.image_base64 and not data.image %}no-photo{% endif %}">
+                        {% if data.image_base64 %}
+                        <img src="{{ data.image_base64|safe }}" class="photo-img">
+                        {% elif data.image %}
+                        <img src="{{ data.image.url }}" class="photo-img">
+                        {% else %}
+                        <div class="np-emo">{% if data.is_rejected %}🌸{% else %}💌{% endif %}</div>
+                        <div class="np-txt">No photo uploaded</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Body -->
+                    <div class="c-body">
+                        <div class="c-quote">"{{ data.quote }}"</div>
+                        <div class="c-rec">
+                            <div class="c-heart">♥</div>
+                            <div class="c-name">{{ data.name }}</div>
+                        </div>
+                        <div class="c-dates">
+                            <div class="c-date">
+                                <svg viewBox="0 0 24 24">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span class="cd-lbl">Sent</span>
+                                <span class="cd-val">{{ data.propose_date|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="c-date">
+                                {% if data.status or data.is_rejected %}
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                </svg>
+                                <span class="cd-lbl">Replied</span>
+                                <span class="cd-val">{{ data.response_date|date:"M d, Y" }}</span>
+                                {% else %}
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                </svg>
+                                <span class="cd-lbl">Replied</span>
+                                <span class="cd-val">reply…</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="c-acts">
+                            {% if not data.status %}
+                            <button class="c-btn cb-share interact" onclick="shareCard('{{ data.card_uuid }}')">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="18" cy="5" r="3"></circle>
+                                    <circle cx="6" cy="12" r="3"></circle>
+                                    <circle cx="18" cy="19" r="3"></circle>
+                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                </svg>
+                                Share
+                            </button>
+                            {% endif %}
+                            <button class="c-btn cb-del interact"
+                                onclick="reqDelete('{% url 'card_delete' data.id %}')">
+                                <svg viewBox="0 0 24 24">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                    </path>
+                                </svg>
+                                Delete
+                            </button>
+                            <a href="{% url 'card_update' data.card_uuid %}" class="cb-view interact">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
                 {% endif %}
-                <a href="{% url 'card_delete' data.id %}" class="action-btn delete-btn">
-                    <i class="fa-solid fa-trash-can"></i> Delete
-                </a>
+
+                <div class="add-tile interact" onclick="newCard()" style="animation-delay:0.75s;">
+                    <div class="a-icon">✦</div>
+                    <div class="a-lbl">Create a new card</div>
+                    <div class="a-sub">Express something beautiful</div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats">
+                <div class="stat">
+                    <div class="s-num" id="ss-tot">{{ datas|length }}</div>
+                    <div class="s-lbl">Cards Created</div>
+                </div>
+                <div class="stat">
+                    <div class="s-num" id="ss-acc">0</div>
+                    <div class="s-lbl">Accepted ❤️</div>
+                </div>
+                <div class="stat">
+                    <div class="s-num" id="ss-wat">0</div>
+                    <div class="s-lbl">Awaiting Reply</div>
+                </div>
+                <div class="stat">
+                    <div class="s-num" id="ss-rat">0%</div>
+                    <div class="s-lbl">Accept Rate</div>
+                </div>
             </div>
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="empty-state">
-        <div class="empty-icon">
-            <i class="fa-solid fa-heart-circle-plus"></i>
+
+        <div class="footer">
+            <span class="fot-b">LoveCards</span> · Made with <span
+                style="color:var(--rose-bright); animation:heartbeat 1.8s infinite; display:inline-block;">♥</span> by
+            Sai Kiran — Spread Love, Always.
         </div>
-        <h2>No Cards Yet</h2>
-        <p>Start by creating your first love card!</p>
-        <a href="{% url 'create_card' %}" class="create-btn">
-            <i class="fa-solid fa-plus"></i> Create Card
-        </a>
     </div>
-    {% endif %}
-</div>
 
-{% endblock content %}
+    <!-- Modal -->
+    <div class="modal-ov" id="mod" onclick="if(event.target===this)closeMod()">
+        <div class="modal">
+            <div class="m-emo">💔</div>
+            <div class="m-tit">Delete this card?</div>
+            <div class="m-bod">This love card will be permanently removed. Your recipient's response will also be lost.
+                This cannot be undone.</div>
+            <div class="m-acts">
+                <button class="mb-gho interact" onclick="closeMod()">Keep It</button>
+                <button class="mb-dan interact" onclick="runDel()">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
 
-{% block scripts %}
-<script>
-    function shareCard(cardId) {
-        const baseUrl = window.location.origin;
-        const shareUrl = `${baseUrl}/card_update/${cardId}/`;
+    <!-- Toast -->
+    <div class="toast" id="tst">
+        <div class="t-emo" id="te"></div>
+        <div class="t-col">
+            <div class="t-ti" id="tt"></div>
+            <div class="t-su" id="ts"></div>
+        </div>
+        <div class="t-close interact" onclick="document.getElementById('tst').classList.remove('show')">✕</div>
+    </div>
 
-        // Create a temporary input to copy the URL
-        const tempInput = document.createElement('input');
-        tempInput.value = shareUrl;
-        document.body.appendChild(tempInput);
-        tempInput.select();
+    <script>
+        // Custom Cursor
+        const dot = document.getElementById('c-dot'), ring = document.getElementById('c-ring');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+        window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.top = my + 'px'; dot.style.left = mx + 'px'; });
+        function loop() { rx += (mx - rx) * 0.13; ry += (my - ry) * 0.13; ring.style.top = ry + 'px'; ring.style.left = rx + 'px'; requestAnimationFrame(loop); } loop();
+        document.querySelectorAll('.interact').forEach(el => { el.addEventListener('mouseenter', () => document.body.classList.add('hover')); el.addEventListener('mouseleave', () => document.body.classList.remove('hover')); });
 
-        try {
-            document.execCommand('copy');
-            alert("Link copied to clipboard! Share it with your Valentine! ❤️\n\n" + shareUrl);
-        } catch (err) {
-            prompt("Copy this link to share your card:", shareUrl);
+        // Generate Particles/Petals
+        const pCont = document.getElementById('particles'), fCont = document.getElementById('petals');
+        const cols = ['rgba(232,96,122,X)', 'rgba(201,149,106,X)', 'rgba(255,214,222,X)'];
+        for (let i = 0; i < 22; i++) { let p = document.createElement('div'); p.className = 'particle'; let s = 2 + Math.random() * 4; p.style.width = s + 'px'; p.style.height = s + 'px'; p.style.left = (Math.random() * 100) + '%'; p.style.background = cols[Math.floor(Math.random() * cols.length)].replace('X', 0.3 + Math.random() * 0.5); p.style.setProperty('--drift', (-60 + Math.random() * 120) + 'px'); p.style.animation = `pRise ${12 + Math.random() * 20}s linear infinite`; p.style.animationDelay = (-Math.random() * 32) + 's'; pCont.appendChild(p); }
+        for (let i = 0; i < 14; i++) { let p = document.createElement('div'); p.className = 'petal'; p.style.left = (Math.random() * 100) + '%'; p.style.setProperty('--drift', (-80 + Math.random() * 160) + 'px'); p.style.animation = `pFall ${14 + Math.random() * 20}s linear infinite`; p.style.animationDelay = (-Math.random() * 34) + 's'; fCont.appendChild(p); }
+
+        // Dynamic Counts
+        let acc = 0, wat = 0, dec = 0, tot = 0;
+        document.querySelectorAll('.card-js').forEach(c => { let s = c.getAttribute('data-status'); if (s === 'accepted') acc++; else if (s === 'declined') dec++; else wat++; tot++; });
+        if (document.getElementById('c-acc')) { document.getElementById('c-acc').innerText = acc; document.getElementById('c-wat').innerText = wat; document.getElementById('c-dec').innerText = dec; }
+        if (document.getElementById('ss-acc')) { document.getElementById('ss-acc').innerText = acc; document.getElementById('ss-wat').innerText = wat; let rat = tot > 0 ? Math.round((acc / tot) * 100) : 0; document.getElementById('ss-rat').innerText = rat + '%'; }
+
+        // Filter Function
+        function setFilter(btn, s) {
+            document.querySelectorAll('.f-tab').forEach(t => t.classList.remove('active')); btn.classList.add('active');
+            document.querySelectorAll('.card-js').forEach(c => { if (s === 'all' || c.getAttribute('data-status') === s) { c.style.display = 'flex'; c.style.animation = 'none'; c.offsetHeight; c.style.animation = 'cardRise 1s forwards'; } else { c.style.display = 'none'; } });
         }
 
-        document.body.removeChild(tempInput);
-    }
-</script>
-{% endblock scripts %}
+        // 3D Card Hover
+        document.querySelectorAll('.card-js').forEach(c => { c.addEventListener('mousemove', e => { let r = c.getBoundingClientRect(); let x = e.clientX - r.left, y = e.clientY - r.top; let cx = r.width / 2, cy = r.height / 2; let rx = (y - cy) / cy * -3.5, ry = (x - cx) / cx * 3.5; c.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.018)`; }); c.addEventListener('mouseleave', () => { c.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)'; }); });
+
+        // Toast
+        function showT(e, t, s) { document.getElementById('te').innerText = e; document.getElementById('tt').innerText = t; document.getElementById('ts').innerText = s; let ts = document.getElementById('tst'); ts.classList.add('show'); setTimeout(() => ts.classList.remove('show'), 5000); }
+        function shareCard(id) { let u = `${window.location.origin}/card_update/${id}/`; let i = document.createElement('input'); i.value = u; document.body.appendChild(i); i.select(); try { document.execCommand('copy'); showT('🔗', 'Link copied!', 'Share it with your special someone ❤️'); } catch (e) { } document.body.removeChild(i); }
+        function newCard() { showT('✍️', 'New card started!', 'Redirecting to creation page…'); setTimeout(() => window.location.href = "{% url 'create_card' %}", 800); }
+
+        // Modal
+        let delUrl = null;
+        function reqDelete(url) { delUrl = url; document.getElementById('mod').classList.add('show'); }
+        function closeMod() { document.getElementById('mod').classList.remove('show'); delUrl = null; }
+        function runDel() { if (delUrl) window.location.href = delUrl; }
+    </script>
+</body>
+
+</html>

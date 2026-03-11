@@ -1,118 +1,1125 @@
-{% extends 'index.html' %}
 {% load static %}
-{% block style %}
-<link rel="stylesheet" href="{% static 'css/signup.css' %}?v=5">
-{% endblock style %}
-{% block content %}
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <div class="auth-icon">
-                <i class="fa-solid fa-user-plus"></i>
-            </div>
-            <h2>Create Account</h2>
-            <p class="auth-subtitle">Join us and start creating beautiful cards</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - LoveCards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --rose: #e8607a;
+            --rose-bright: #ff7b94;
+            --rose-deep: #b8394f;
+            --blush: #ffd6de;
+            --wine: #5c1627;
+            --gold: #c9956a;
+            --gold-soft: #e8c9a8;
+            --midnight: #0c0610;
+            --deep: #130818;
+            --txt: rgba(255, 255, 255, 0.90);
+            --txt-muted: rgba(255, 255, 255, 0.42);
+            --txt-dim: rgba(255, 255, 255, 0.22);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none;
+        }
+
+        body {
+            background: var(--midnight);
+            color: var(--txt);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Layers */
+        .layer-1 {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: var(--deep);
+        }
+
+        .layer-1::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 70% 55% at 0% 0%, rgba(92, 22, 39, 0.70), transparent 65%), radial-gradient(ellipse 50% 45% at 100% 0%, rgba(184, 57, 79, 0.22), transparent 60%), radial-gradient(ellipse 60% 50% at 50% 100%, rgba(92, 22, 39, 0.45), transparent 65%), radial-gradient(ellipse 35% 35% at 100% 50%, rgba(201, 149, 106, 0.10), transparent 60%);
+        }
+
+        .layer-2 {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            filter: blur(90px);
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .orb-1 {
+            width: 520px;
+            height: 520px;
+            top: -100px;
+            left: -100px;
+            background: radial-gradient(circle, rgba(184, 57, 79, 0.28), transparent 70%);
+            animation: orbDrift 14s ease-in-out infinite alternate;
+        }
+
+        .orb-2 {
+            width: 380px;
+            height: 380px;
+            bottom: -50px;
+            right: -50px;
+            background: radial-gradient(circle, rgba(92, 22, 39, 0.40), transparent 70%);
+            animation: orbDrift 18s ease-in-out infinite alternate;
+            animation-delay: -6s;
+        }
+
+        .orb-3 {
+            width: 260px;
+            height: 260px;
+            top: 30%;
+            left: 50%;
+            background: radial-gradient(circle, rgba(201, 149, 106, 0.14), transparent 70%);
+            animation: orbDrift 22s ease-in-out infinite alternate;
+            animation-delay: -10s;
+        }
+
+        @keyframes orbDrift {
+            from {
+                transform: translate(0, 0) scale(1);
+            }
+
+            to {
+                transform: translate(30px, 40px) scale(1.12);
+            }
+        }
+
+        .layer-3 {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.028;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 200px;
+            repeat: repeat;
+        }
+
+        #particles,
+        #petals {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            bottom: -10px;
+        }
+
+        @keyframes pRise {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) translateX(var(--drift));
+                opacity: 0;
+            }
+        }
+
+        .petal {
+            position: absolute;
+            width: 7px;
+            height: 11px;
+            border-radius: 0 50% 50% 0 / 40% 50% 50% 40%;
+            background: radial-gradient(ellipse at 35% 25%, rgba(232, 96, 122, 0.65), rgba(184, 57, 79, 0.15));
+            top: -20px;
+        }
+
+        @keyframes pFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(108vh) rotate(540deg);
+                opacity: 0;
+            }
+        }
+
+        /* Cursor */
+        #c-dot {
+            position: fixed;
+            width: 9px;
+            height: 9px;
+            background: var(--rose-bright);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s;
+        }
+
+        #c-ring {
+            position: fixed;
+            width: 38px;
+            height: 38px;
+            border: 1.5px solid rgba(232, 96, 122, 0.45);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9998;
+            transition: width 0.3s, height 0.3s;
+        }
+
+        body.hover #c-dot {
+            transform: translate(-50%, -50%) scale(2);
+        }
+
+        body.hover #c-ring {
+            width: 52px;
+            height: 52px;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 68px;
+            background: rgba(12, 6, 16, 0.72);
+            backdrop-filter: blur(20px) saturate(1.4);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            padding: 0 48px;
+            z-index: 500;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .b-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+            box-shadow: 0 4px 20px rgba(232, 96, 122, 0.40);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .b-txt {
+            font-family: 'Cormorant Garamond';
+            font-weight: 600;
+            font-size: 1.55rem;
+        }
+
+        .b-txt .love {
+            font-style: italic;
+            color: var(--rose-bright);
+        }
+
+        .b-txt .cards {
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .nav-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Outfit';
+            font-size: 0.9rem;
+        }
+
+        .nr-dim {
+            color: var(--txt-muted);
+        }
+
+        .nr-link {
+            color: var(--rose-bright);
+            transition: 0.3s;
+            cursor: none;
+        }
+
+        .nr-link:hover {
+            text-shadow: 0 0 10px rgba(232, 96, 122, 0.4);
+        }
+
+        /* Layout */
+        .main {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 68px 24px 80px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 500px;
+            align-items: center;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            gap: 60px;
+            justify-content: center;
+        }
+
+        @media(max-width:1000px) {
+            .grid {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+                gap: 0;
+            }
+
+            .col-l {
+                display: none;
+            }
+        }
+
+        /* Animations */
+        @keyframes riseIn {
+            from {
+                opacity: 0;
+                transform: translateY(28px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardRise {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes iconPop {
+            from {
+                opacity: 0;
+                transform: scale(0.5) rotate(-15deg);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+
+        @keyframes heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            20% {
+                transform: scale(1.3);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+
+            55% {
+                transform: scale(1.15);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 160%;
+            }
+        }
+
+        /* Left Column */
+        .col-l {
+            opacity: 0;
+            animation: riseIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+            padding-right: 20px;
+        }
+
+        .tagline {
+            font-family: 'Cormorant Garamond';
+            font-weight: 300;
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+
+        .tl-1,
+        .tl-3 {
+            color: rgba(255, 255, 255, 0.75);
+            display: block;
+        }
+
+        .tl-2 {
+            font-style: italic;
+            background: linear-gradient(135deg, var(--blush), var(--rose), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+        }
+
+        .sub {
+            font-family: 'Outfit';
+            font-weight: 300;
+            font-size: 0.9rem;
+            color: var(--txt-muted);
+            line-height: 1.6;
+            max-width: 300px;
+            margin-bottom: 40px;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step {
+            padding: 16px 18px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(10px);
+            display: flex;
+            gap: 14px;
+            transition: 0.3s;
+        }
+
+        .step:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(232, 96, 122, 0.18);
+            transform: translateX(6px);
+        }
+
+        .st-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(232, 96, 122, 0.14);
+            border: 1px solid rgba(232, 96, 122, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cormorant Garamond';
+            font-style: italic;
+            font-size: 0.9rem;
+            color: var(--rose-bright);
+            flex-shrink: 0;
+        }
+
+        .st-ti {
+            font-family: 'Cormorant Garamond';
+            font-style: italic;
+            font-weight: 400;
+            font-size: 0.95rem;
+            color: var(--blush);
+            margin-bottom: 2px;
+        }
+
+        .st-bd {
+            font-family: 'Outfit';
+            font-size: 0.72rem;
+            color: var(--txt-dim);
+            line-height: 1.5;
+        }
+
+        /* Center Column - Form */
+        .signup-card {
+            border-radius: 32px;
+            padding: 52px 48px 48px;
+            background: rgba(255, 255, 255, 0.044);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(28px) saturate(1.4);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            animation: cardRise 1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+        }
+
+        .signup-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(232, 96, 122, 0.65), transparent);
+        }
+
+        .signup-card::after {
+            content: '';
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(232, 96, 122, 0.10), transparent 60%);
+            pointer-events: none;
+        }
+
+        .lc-icon {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            margin: 0 auto 24px;
+            background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+            box-shadow: 0 8px 32px rgba(232, 96, 122, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            opacity: 0;
+            animation: iconPop 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+        }
+
+        .lc-ti {
+            font-family: 'Cormorant Garamond';
+            font-style: italic;
+            font-weight: 300;
+            font-size: 2.4rem;
+            text-align: center;
+            background: linear-gradient(135deg, #fff, var(--blush), var(--rose));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            animation: riseIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
+        }
+
+        .lc-su {
+            font-family: 'Outfit';
+            font-weight: 300;
+            font-size: 0.88rem;
+            color: var(--txt-muted);
+            text-align: center;
+            margin-top: 8px;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: riseIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.42s forwards;
+        }
+
+        .req-ban {
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-bottom: 24px;
+            background: rgba(232, 96, 122, 0.08);
+            border: 1px solid rgba(232, 96, 122, 0.20);
+            display: flex;
+            gap: 12px;
+            opacity: 0;
+            animation: riseIn 1s cubic-bezier(0.22, 1, 0.36, 1) 0.46s forwards;
+        }
+
+        .req-i {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(232, 96, 122, 0.25);
+            border: 1px solid rgba(232, 96, 122, 0.35);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Outfit';
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: var(--rose-bright);
+        }
+
+        .req-ti {
+            font-family: 'Outfit';
+            font-weight: 600;
+            font-size: 0.68rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--rose-bright);
+            margin-bottom: 5px;
+        }
+
+        .req-bd {
+            font-family: 'Outfit';
+            font-weight: 300;
+            font-size: 0.78rem;
+            color: var(--txt-muted);
+            line-height: 1.6;
+        }
+
+        .req-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .rtag {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-family: 'Outfit';
+            font-size: 0.66rem;
+            background: rgba(232, 96, 122, 0.10);
+            border: 1px solid rgba(232, 96, 122, 0.18);
+            color: rgba(232, 96, 122, 0.75);
+        }
+
+        .f-grp {
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: riseIn 1s 0.55s forwards;
+        }
+
+        .f-lbl {
+            font-family: 'Outfit';
+            font-weight: 500;
+            font-size: 0.70rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--gold);
+            display: block;
+            margin-bottom: 9px;
+            margin-left: 8px;
+        }
+
+        .inp-rel {
+            position: relative;
+        }
+
+        .inp-rel input {
+            width: 100%;
+            padding: 16px 18px 16px 48px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            font-family: 'Outfit';
+            font-weight: 300;
+            font-size: 0.92rem;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+            cursor: none;
+        }
+
+        .inp-rel input::placeholder {
+            color: rgba(255, 255, 255, 0.42);
+        }
+
+        .inp-rel input:focus {
+            border-color: rgba(232, 96, 122, 0.50);
+            background: rgba(232, 96, 122, 0.06);
+            box-shadow: 0 0 0 3px rgba(232, 96, 122, 0.12);
+        }
+
+        .inp-ico {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: var(--txt-dim);
+            stroke-width: 2;
+            transition: 0.3s;
+            pointer-events: none;
+        }
+
+        .inp-rel input:focus~.inp-ico {
+            stroke: var(--rose-bright);
+        }
+
+        .inp-eye {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: var(--txt-dim);
+            stroke-width: 2;
+            border: none;
+            background: transparent;
+            cursor: none;
+            transition: 0.3s;
+            z-index: 10;
+        }
+
+        .inp-eye:hover {
+            stroke: var(--txt-muted);
+        }
+
+        .f-err {
+            margin-top: 6px;
+            font-family: 'Outfit';
+            font-size: 0.72rem;
+            color: #f09090;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 8px;
+        }
+
+        .f-err svg {
+            width: 12px;
+            height: 12px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .help-text {
+            display: none;
+        }
+
+        /* Hidden as we consolidated to the top banner */
+
+        .btn-sub {
+            width: 100%;
+            padding: 17px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+            font-family: 'Outfit';
+            font-weight: 500;
+            font-size: 1rem;
+            color: #fff;
+            letter-spacing: 0.04em;
+            border: none;
+            box-shadow: 0 8px 32px rgba(232, 96, 122, 0.38);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 28px;
+            margin-bottom: 24px;
+            cursor: none;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+            opacity: 0;
+            animation: riseIn 1s 0.70s forwards;
+        }
+
+        .btn-sub svg {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            transition: 0.3s;
+        }
+
+        .btn-sub::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: skewX(-20deg);
+            animation: shimmer 3s infinite 2s;
+        }
+
+        .btn-sub:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 12px 38px rgba(232, 96, 122, 0.5);
+        }
+
+        .btn-sub:active {
+            transform: translateY(-1px) scale(0.99);
+        }
+
+        .btn-sub.loading {
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        .btn-sub.success {
+            background: linear-gradient(135deg, #6eeaaa, #3ca878);
+        }
+
+        .reg-row {
+            text-align: center;
+            font-family: 'Outfit';
+            font-size: 0.83rem;
+            color: var(--txt-muted);
+            opacity: 0;
+            animation: riseIn 1s 0.76s forwards;
+        }
+
+        .reg-link {
+            color: var(--rose-bright);
+            cursor: none;
+            transition: 0.3s;
+            margin-left: 4px;
+        }
+
+        .reg-link:hover {
+            text-shadow: 0 0 10px rgba(232, 96, 122, 0.4);
+        }
+
+        .msg-box {
+            margin-top: 20px;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-family: 'Outfit';
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            animation: riseIn 0.6s forwards;
+        }
+
+        .msg-box svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .msg-err {
+            background: rgba(220, 80, 80, 0.12);
+            border: 1px solid rgba(220, 80, 80, 0.28);
+            color: #f09090;
+        }
+
+        .msg-succ {
+            background: rgba(60, 200, 120, 0.12);
+            border: 1px solid rgba(60, 200, 120, 0.28);
+            color: #7de8aa;
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 28px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Outfit';
+            font-size: 0.85rem;
+            color: var(--txt-dim);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            background: var(--bg-base);
+        }
+
+        .fot-b {
+            font-family: 'Cormorant Garamond';
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--rose);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Layers -->
+    <div class="layer-1"></div>
+    <div class="layer-2">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="layer-3"></div>
+    <div id="particles"></div>
+    <div id="petals"></div>
+
+    <!-- Cursor -->
+    <div id="c-dot"></div>
+    <div id="c-ring"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar interact">
+        <div class="brand">
+            <div class="b-icon">💝</div>
+            <div class="b-txt"><span class="love">Love</span><span class="cards">Cards</span></div>
         </div>
+        <div class="nav-right">
+            <span class="nr-dim">Already have an account?</span>
+            <a href="{% url 'login' %}" class="nr-link interact">Sign in</a>
+        </div>
+    </nav>
 
-        <form method="post" class="auth-form">
-            {% csrf_token %}
-
-            {% for field in form %}
-            <div class="input-group" id="group-{{ field.name }}">
-                <div class="input-icon">
-                    {% if 'username' in field.name %}
-                    <i class="fa-solid fa-user"></i>
-                    {% elif 'password' in field.name %}
-                    <i class="fa-solid fa-lock"></i>
-                    {% else %}
-                    <i class="fa-solid fa-pen"></i>
-                    {% endif %}
+    <!-- Main -->
+    <div class="main">
+        <div class="grid">
+            <!-- Left Panel -->
+            <div class="col-l">
+                <div class="tagline">
+                    <span class="tl-1">Your love story</span>
+                    <span class="tl-2">starts right here.</span>
+                    <span class="tl-3">Make it beautiful.</span>
                 </div>
-                <div class="field-wrapper">
-                    <label for="{{ field.id_for_label }}" class="field-label">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                    {% for error in field.errors %}
-                    <small class="field-error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</small>
+                <div class="sub">Join thousands who've already sent cards that changed everything. Takes 2 minutes.
+                </div>
+
+                <div class="steps">
+                    <div class="step interact">
+                        <div class="st-num">1</div>
+                        <div>
+                            <div class="st-ti">Create your account</div>
+                            <div class="st-bd">Pick a username and secure password — free forever.</div>
+                        </div>
+                    </div>
+                    <div class="step interact">
+                        <div class="st-num">2</div>
+                        <div>
+                            <div class="st-ti">Craft your first card</div>
+                            <div class="st-bd">Add their name, a quote from the heart, and a photo.</div>
+                        </div>
+                    </div>
+                    <div class="step interact">
+                        <div class="st-num">3</div>
+                        <div>
+                            <div class="st-ti">Watch them respond</div>
+                            <div class="st-bd">Send the link and receive their answer in real time.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Form -->
+            <div class="signup-card">
+                <div class="lc-icon">🌹</div>
+                <div class="lc-ti">Create Account</div>
+                <div class="lc-su">Join LoveCards and start spreading love</div>
+
+                <div class="req-ban interact">
+                    <div class="req-i">i</div>
+                    <div class="req-txt">
+                        <div class="req-ti">REQUIREMENTS</div>
+                        <div class="req-bd">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</div>
+                        <div class="req-tags">
+                            <span class="rtag">150 chars max</span>
+                            <span class="rtag">letters & digits</span>
+                            <span class="rtag">@/./+/-/_</span>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" id="r-form" onsubmit="handleSubClick(event, this)">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div class="f-grp">
+                        <label class="f-lbl" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        <div class="inp-rel">
+                            {{ field }}
+
+                            {% if 'username' in field.name %}
+                            <svg class="inp-ico" viewBox="0 0 24 24">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            {% elif 'password' in field.name %}
+                            <svg class="inp-ico" viewBox="0 0 24 24">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <button type="button" class="inp-eye interact" onclick="togglePass(this)">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                            {% else %}
+                            <svg class="inp-ico" viewBox="0 0 24 24">
+                                <path
+                                    d="M21.17 3.25a2.5 2.5 0 0 0-3.5 0l-12 12A2.5 2.5 0 0 0 5 17.5v2a.5.5 0 0 0 .5.5h2a2.5 2.5 0 0 0 1.75-.75l12-12a2.5 2.5 0 0 0 0-3.5z">
+                                </path>
+                            </svg>
+                            {% endif %}
+                        </div>
+                        {% if field.errors %}
+                        {% for err in field.errors %}
+                        <div class="f-err"><svg viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg> {{ err }}</div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn-sub interact" id="r-btn">
+                        <span id="r-txt">Create My Account</span>
+                        <svg id="r-ico" viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="msg-box {% if message.tags == 'success' %}msg-succ{% else %}msg-err{% endif %}">
+                        {% if message.tags == 'success' %}
+                        <svg viewBox="0 0 24 24">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        {% else %}
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        {% endif %}
+                        {{ message }}
+                    </div>
+                    {% if message.tags == 'success' %}
+                    <script>setTimeout(() => { let m = document.querySelector('.msg-succ'); if (m) { m.style.transition = '0.5s'; m.style.opacity = '0'; setTimeout(() => m.style.display = 'none', 500); } }, 4000);</script>
+                    {% endif %}
                     {% endfor %}
                     {% endif %}
+                </form>
+
+                <div class="reg-row">
+                    Already have an account? <a href="{% url 'login' %}" class="reg-link interact">Sign in instead</a>
                 </div>
-
-                <!-- Tooltip popup for requirements -->
-                {% if field.help_text %}
-                <div class="field-tooltip" id="tooltip-{{ field.name }}">
-                    <div class="tooltip-arrow"></div>
-                    <div class="tooltip-header">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span>Requirements</span>
-                    </div>
-                    <div class="tooltip-body">
-                        {{ field.help_text }}
-                    </div>
-                </div>
-                {% endif %}
             </div>
-            {% endfor %}
 
-            <button type="submit" class="auth-submit-btn">
-                <span>Sign Up</span>
-                <i class="fa-solid fa-arrow-right"></i>
-            </button>
-
-            {% if messages %}
-            {% for message in messages %}
-            <div class="auth-message {% if message.tags == 'success' %}success{% else %}error{% endif %}">
-                <i
-                    class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% else %}fa-triangle-exclamation{% endif %}"></i>
-                {{ message }}
-            </div>
-            {% endfor %}
-            {% endif %}
-        </form>
-
-        <div class="auth-footer">
-            <p>Already have an account? <a href="{% url 'login' %}" class="auth-link">Sign in <i
-                        class="fa-solid fa-arrow-right"></i></a></p>
         </div>
     </div>
-
-    <div class="auth-decoration">
-        <div class="floating-heart" style="--delay: 0s; --x: 25%; --size: 16px;"><i class="fa-solid fa-heart"></i></div>
-        <div class="floating-heart" style="--delay: 2s; --x: 55%; --size: 20px;"><i class="fa-solid fa-heart"></i></div>
-        <div class="floating-heart" style="--delay: 3.5s; --x: 75%; --size: 14px;"><i class="fa-solid fa-heart"></i>
-        </div>
-        <div class="floating-heart" style="--delay: 1s; --x: 45%; --size: 18px;"><i class="fa-solid fa-heart"></i></div>
-        <div class="floating-heart" style="--delay: 4s; --x: 15%; --size: 12px;"><i class="fa-solid fa-heart"></i></div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const inputGroups = document.querySelectorAll('.input-group');
+    <!-- Footer -->
+    <div class="footer">
+        <span class="fot-b">LoveCards</span> · <span style="color:var(--txt-dim)">Made with</span> <span
+            style="color:var(--rose-bright); animation:heartbeat 1.8s infinite; display:inline-block;">♥</span> <span
+            style="color:var(--txt-dim)">by Sai Kiran — Spread Love, Always.</span>
+    </div>
 
-        inputGroups.forEach(function (group) {
-            const input = group.querySelector('input');
-            const tooltip = group.querySelector('.field-tooltip');
-
-            if (!input || !tooltip) return;
-
-            input.addEventListener('focus', function () {
-                // Close all other tooltips first
-                document.querySelectorAll('.field-tooltip.active').forEach(function (t) {
-                    if (t !== tooltip) t.classList.remove('active');
-                });
-                tooltip.classList.add('active');
-            });
-
-            input.addEventListener('blur', function () {
-                // Small delay so clicking on tooltip doesn't cause flicker
-                setTimeout(function () {
-                    tooltip.classList.remove('active');
-                }, 200);
-            });
+    <script>
+        // Intercept inputs injected by Django to apply styling hooks
+        document.querySelectorAll('.inp-rel input').forEach(inp => {
+            inp.classList.add('interact');
+            if (!inp.placeholder) inp.placeholder = inp.name.includes('pass') ? 'Enter a secure password' : 'Enter a unique username';
         });
-    });
-</script>
 
-{% endblock content %}
+        // Custom Cursor
+        const dot = document.getElementById('c-dot'), ring = document.getElementById('c-ring');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+        window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.top = my + 'px'; dot.style.left = mx + 'px'; });
+        function loop() { rx += (mx - rx) * 0.13; ry += (my - ry) * 0.13; ring.style.top = ry + 'px'; ring.style.left = rx + 'px'; requestAnimationFrame(loop); } loop();
+        document.querySelectorAll('.interact').forEach(el => { el.addEventListener('mouseenter', () => document.body.classList.add('hover')); el.addEventListener('mouseleave', () => document.body.classList.remove('hover')); });
+
+        // Generate Particles/Petals
+        const pCont = document.getElementById('particles'), fCont = document.getElementById('petals');
+        const cols = ['rgba(232,96,122,X)', 'rgba(201,149,106,X)', 'rgba(255,214,222,X)'];
+        for (let i = 0; i < 22; i++) { let p = document.createElement('div'); p.className = 'particle'; let s = 2 + Math.random() * 4; p.style.width = s + 'px'; p.style.height = s + 'px'; p.style.left = (Math.random() * 100) + '%'; p.style.background = cols[Math.floor(Math.random() * cols.length)].replace('X', 0.3 + Math.random() * 0.5); p.style.setProperty('--drift', (-60 + Math.random() * 120) + 'px'); p.style.animation = `pRise ${12 + Math.random() * 20}s linear infinite`; p.style.animationDelay = (-Math.random() * 32) + 's'; pCont.appendChild(p); }
+        for (let i = 0; i < 14; i++) { let p = document.createElement('div'); p.className = 'petal'; p.style.left = (Math.random() * 100) + '%'; p.style.setProperty('--drift', (-80 + Math.random() * 160) + 'px'); p.style.animation = `pFall ${14 + Math.random() * 20}s linear infinite`; p.style.animationDelay = (-Math.random() * 34) + 's'; fCont.appendChild(p); }
+
+        function togglePass(btn) {
+            let p = btn.parentElement.querySelector('input');
+            let e = btn.querySelector('svg');
+            if (p.type === 'password') {
+                p.type = 'text';
+                e.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+            } else {
+                p.type = 'password';
+                e.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+            }
+        }
+
+        function handleSubClick(e, form) {
+            e.preventDefault();
+            let b = document.getElementById('r-btn');
+            let t = document.getElementById('r-txt');
+            let i = document.getElementById('r-ico');
+
+            b.classList.add('loading');
+            t.innerText = 'Creating account…';
+            i.style.display = 'none';
+
+            setTimeout(() => {
+                b.classList.remove('loading');
+                b.classList.add('success');
+                t.innerText = '✓ Perfect!';
+
+                setTimeout(() => {
+                    form.submit();
+                }, 1100);
+            }, 1400);
+        }
+    </script>
+</body>
+
+</html>

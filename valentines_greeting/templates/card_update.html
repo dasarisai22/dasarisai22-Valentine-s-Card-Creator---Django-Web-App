@@ -10,6 +10,7 @@
         width: 100%;
         padding: 20px;
         position: relative;
+        z-index: 10;
     }
 
     .val-card {
@@ -97,6 +98,44 @@
     .hidden-form {
         display: none;
     }
+
+    /* Emojis falling in the background */
+    .f-emoji {
+        position: fixed;
+        z-index: 9999;
+        pointer-events: none;
+        opacity: 1;
+        transform: translateY(-10vh);
+        font-size: 2rem;
+        animation: emoFall linear forwards;
+    }
+
+    @keyframes emoFall {
+        to {
+            transform: translateY(110vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    .blast-emoji {
+        position: fixed;
+        z-index: 9999;
+        pointer-events: none;
+        font-size: 3rem;
+        animation: emoBlast 1.5s ease-out forwards;
+    }
+
+    @keyframes emoBlast {
+        0% {
+            transform: translate(-50%, -50%) scale(0.2);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translate(var(--dx), var(--dy)) scale(1.5);
+            opacity: 0;
+        }
+    }
 </style>
 {% endblock style %}
 
@@ -113,13 +152,19 @@
 
         <p class="val-quote">"{{ data.quote|default:'Will you be my Valentine?' }}"</p>
 
-        {% if not data.status %}
+        {% if data.status %}
+        <p class="val-question">Yay! You accepted! 🥰💖</p>
+        {% elif data.is_rejected %}
+        <p class="val-question" style="color: #bbb;">You rejected... 💔</p>
+        {% else %}
         <p class="val-question">Will you be my Valentine? 💖</p>
         <div class="val-buttons" id="btn-container">
             <form action="" method="post" id="yes-form">
                 {% csrf_token %}
                 <div class="hidden-form">
                     {{ form }}
+                    <!-- We use check so views knows which form was sent -->
+                    <input type="checkbox" name="status" checked>
                 </div>
                 <button type="submit" class="btn-yes" id="btn-yes">YES!</button>
             </form>
@@ -128,14 +173,11 @@
                 {% csrf_token %}
                 <div class="hidden-form">
                     {{ form }}
+                    <!-- No status checked -->
                 </div>
-                <!-- status False, but is_rejected will be set in views if possible -->
-                <!-- actually we can just use a hidden input for is_rejected if we create it -->
                 <button type="submit" class="btn-no" id="btn-no">No</button>
             </form>
         </div>
-        {% else %}
-        <p class="val-question">Yay! You accepted! 🥰💖</p>
         {% endif %}
     </div>
 </div>
@@ -143,9 +185,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const noBtn = document.getElementById('btn-no');
-        const yesForm = document.getElementById('yes-form');
-        const noForm = document.getElementById('no-form');
 
+        // Dodge logic for the "No" button
         const dodge = (e) => {
             if (e.type === 'touchstart') e.preventDefault();
             const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 50);
@@ -161,19 +202,59 @@
             noBtn.addEventListener('mouseover', dodge);
             noBtn.addEventListener('touchstart', dodge);
 
-            // If they actually click it (hard on moving target)
             noBtn.addEventListener('click', (e) => {
                 const confirmed = confirm("Are you absolutely sure you want to reject? 💔");
                 if (!confirmed) e.preventDefault();
             });
         }
 
-        if (yesForm) {
-            yesForm.addEventListener('submit', (e) => {
-                const statusCheckbox = yesForm.querySelector('input[name="status"]');
-                if (statusCheckbox) statusCheckbox.checked = true;
-            });
+        // Animations based on final state
+        {% if data.status %}
+        // Love Blast
+        const loveEmojis = ['💖', '🥰', '💕', '💘', '💝', '🫶', '❤️', '🌹'];
+        for (let i = 0; i < 60; i++) {
+            let e = document.createElement('div');
+            e.className = 'blast-emoji';
+            e.innerText = loveEmojis[Math.floor(Math.random() * loveEmojis.length)];
+            e.style.left = '50%';
+            e.style.top = '50%';
+
+            // Blast trajectory
+            let angle = Math.random() * Math.PI * 2;
+            let velocity = 200 + Math.random() * 400;
+            e.style.setProperty('--dx', `${Math.cos(angle) * velocity}px`);
+            e.style.setProperty('--dy', `${Math.sin(angle) * velocity}px`);
+
+            document.body.appendChild(e);
+            setTimeout(() => e.remove(), 1500);
         }
+
+        // Continuous rain
+        setInterval(() => {
+            let e = document.createElement('div');
+            e.className = 'f-emoji';
+            e.innerText = loveEmojis[Math.floor(Math.random() * loveEmojis.length)];
+            e.style.left = `${Math.random() * 100}vw`;
+            e.style.animationDuration = `${3 + Math.random() * 3}s`;
+            document.body.appendChild(e);
+            setTimeout(() => e.remove(), 6000);
+        }, 300);
+
+        {% elif data.is_rejected %}
+        // Sad Rain
+        const sadEmojis = ['💔', '😭', '😢', '🥀', '☔', '🥺'];
+        for (let i = 0; i < 40; i++) {
+            setTimeout(() => {
+                let e = document.createElement('div');
+                e.className = 'f-emoji';
+                e.innerText = sadEmojis[Math.floor(Math.random() * sadEmojis.length)];
+                e.style.left = `${Math.random() * 100}vw`;
+                e.style.animationDuration = `${4 + Math.random() * 4}s`;
+                document.body.appendChild(e);
+                setTimeout(() => e.remove(), 8000);
+            }, Math.random() * 2000);
+        }
+        {% endif %}
     });
 </script>
 {% endblock content %}

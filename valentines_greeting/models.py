@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+import uuid
 
 class Card(models.Model):
     name = models.CharField(max_length=25)
@@ -14,6 +15,7 @@ class Card(models.Model):
     status = models.BooleanField(default=False)
     is_rejected = models.BooleanField(default=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    card_uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     
     def __str__(self):
         return self.name

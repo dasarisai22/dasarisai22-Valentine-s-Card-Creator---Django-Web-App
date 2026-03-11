@@ -63,8 +63,8 @@ def card_details(request):
 
 
 
-def card_update (request,id):
-    data = get_object_or_404(Card, id=id)
+def card_update (request, uuid):
+    data = get_object_or_404(Card, card_uuid=uuid)
     is_owner = request.user.is_authenticated and data.user_id == request.user
     
     if request.method == 'POST':
@@ -97,7 +97,7 @@ def card_update (request,id):
 
             card.save()
             messages.success(request, 'Response Recorded!' if not is_owner else 'Card Updated!')
-            return redirect('card_details' if is_owner else 'home')
+            return redirect('card_details' if is_owner else 'card_update', uuid=card.card_uuid if not is_owner else None)
     else:
         form = Cardform(instance=data)
     

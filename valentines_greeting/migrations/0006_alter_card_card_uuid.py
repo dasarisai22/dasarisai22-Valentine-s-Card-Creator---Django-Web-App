@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("valentines_greeting", "0004_card_card_uuid"),
+        ("valentines_greeting", "0005_populate_card_uuid"),
     ]
 
     operations = [

@@ -1479,17 +1479,18 @@
 
             <div class="lc">
                 <div class="l-ph">
+                    {% with img=data.image_base64|default:data.image %}
                     <img src="{% if data.image_base64 %}{{ data.image_base64|safe }}{% elif data.image %}{{ data.image.url }}{% endif %}"
-                        class="l-img" id="lp-img" {% if data.image_base64 or data.image %}style="display:block;" {%
-                        endif %}>
-                    <span id="lp-emo" {% if data.image_base64 or data.image %}style="display:none;" {% endif
-                        %}>💕</span>
+                        class="l-img" id="lp-img" {% if img %}style="display:block;" {% endif %}>
+
+                    <span id="lp-emo" {% if img %}style="display:none;" {% endif %}>💕</span>
                 </div>
+                <!-- prettier-ignore -->
                 <div class="l-for">A card for</div>
                 <div class="l-name" id="lp-nm">{{ form.name.value|default:"Their Name" }}</div>
                 <div class="l-div"></div>
-                <div class="l-quote" id="lp-qu">"{{ form.quote.value|default:'Your message will appear here, written in
-                    the language of the heart…' }}"</div>
+                <div class="l-quote" id="lp-qu">"{{ form.quote.value|default:'Your message will appear here' }}"</div>
+                {% endwith %}
 
                 <div class="l-acts">
                     <button class="la-1">❤️ Yes, always</button>

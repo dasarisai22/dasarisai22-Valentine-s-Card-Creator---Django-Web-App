@@ -1,7 +1,148 @@
 {% extends 'index.html' %}
 {% load static %}
 {% block style %}
+<script>
+    (function () {
+        // Generate unique theme color based on card UUID
+        const u = "{{ data.card_uuid }}";
+        let h = 0; for (let i = 0; i < u.length; i++) h = u.charCodeAt(i) + ((h << 5) - h);
+        document.documentElement.style.setProperty('--c-hue', Math.abs(h) % 360);
+    })();
+</script>
 <style>
+    /* Envelope Intro Section */
+    .env-intro {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        background: rgba(10, 5, 15, 0.98);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        transition: opacity 1s 1.2s;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .env-intro.opened {
+        display: none;
+    }
+
+    /* Used JS setTimeout instead */
+    .env-msg {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.4rem;
+        color: #fff;
+        font-style: italic;
+        text-shadow: 0 0 20px hsla(var(--c-hue), 80%, 60%, 0.6);
+        animation: pulse 2.5s infinite;
+        letter-spacing: 0.05em;
+    }
+
+    .env-tap {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 0.7;
+        }
+
+        50% {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+    }
+
+    .env {
+        position: relative;
+        width: 340px;
+        height: 230px;
+        background: hsl(var(--c-hue), 25%, 20%);
+        border-radius: 12px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+        cursor: pointer;
+        transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .env:hover {
+        transform: scale(1.06) translateY(-10px);
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.9), 0 0 40px hsla(var(--c-hue), 80%, 50%, 0.4);
+    }
+
+    .env-flap {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 135px;
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+        background: hsl(var(--c-hue), 32%, 35%);
+        transform-origin: top;
+        transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 3;
+    }
+
+    .env-body {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        clip-path: polygon(0 0, 50% 50%, 100% 0, 100% 100%, 0 100%);
+        background: hsl(var(--c-hue), 38%, 28%);
+        border-radius: 12px;
+    }
+
+    .env-wax {
+        position: absolute;
+        top: 110px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 48px;
+        height: 48px;
+        background: #921323;
+        border-radius: 50%;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6), inset 0 0 12px rgba(0, 0, 0, 0.8);
+        z-index: 4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.4rem;
+        transition: 0.4s;
+    }
+
+    /* Opening animations */
+    .env-intro.opening .env-flap {
+        transform: rotateX(180deg);
+    }
+
+    .env-intro.opening .env-wax {
+        opacity: 0;
+        transform: translateX(-50%) scale(0);
+        box-shadow: none;
+    }
+
+    .env-intro.opening .env {
+        transform: scale(1.2) translateY(300px);
+        opacity: 0;
+        transition: all 1s ease-in 0.4s;
+        pointer-events: none;
+    }
+
+    .env-intro.opening .env-msg,
+    .env-intro.opening .env-tap {
+        opacity: 0;
+        transition: 0.5s;
+    }
+
+    /* The Main Card */
     .val-container {
         display: flex;
         justify-content: center;
@@ -11,50 +152,66 @@
         padding: 20px;
         position: relative;
         z-index: 10;
+        /* Start hidden, show when envelope opens */
+        opacity: 0;
+        transform: scale(0.85) translateY(40px);
+    }
+
+    .val-container.revealed {
+        animation: cardShow 1.2s 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    @keyframes cardShow {
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
     }
 
     .val-card {
-        background: rgba(25, 25, 55, 0.75);
+        background: linear-gradient(145deg, hsla(var(--c-hue), 50%, 14%, 0.85), hsla(var(--c-hue), 30%, 8%, 0.95));
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 107, 157, 0.2);
+        border: 1px solid hsla(var(--c-hue), 60%, 50%, 0.3);
         border-radius: 24px;
         padding: 40px;
         text-align: center;
         max-width: 500px;
         width: 100%;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 107, 157, 0.15);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), inset 0 2px 20px hsla(var(--c-hue), 60%, 50%, 0.15);
         color: white;
     }
 
     .val-to {
         font-family: 'Playfair Display', serif;
-        font-size: 2rem;
-        color: #ff6b9d;
-        margin-bottom: 20px;
+        font-size: 2.2rem;
+        color: hsl(var(--c-hue), 80%, 75%);
+        margin-bottom: 24px;
+        text-shadow: 0 2px 10px hsla(var(--c-hue), 80%, 75%, 0.4);
     }
 
     .val-quote {
         font-family: 'Dancing Script', cursive;
-        font-size: 1.8rem;
+        font-size: 1.9rem;
         margin-bottom: 30px;
         color: rgba(255, 255, 255, 0.9);
-        line-height: 1.4;
+        line-height: 1.5;
     }
 
     .val-img {
         max-width: 100%;
         border-radius: 16px;
         margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        border: 2px solid hsla(var(--c-hue), 60%, 50%, 0.2);
     }
 
     .val-question {
         font-family: 'Inter', sans-serif;
         font-size: 1.4rem;
         font-weight: 600;
-        margin-bottom: 30px;
-        color: #e0c3fc;
+        margin-bottom: 32px;
+        color: hsl(var(--c-hue), 60%, 85%);
     }
 
     .val-buttons {
@@ -65,34 +222,38 @@
     }
 
     .btn-yes {
-        background: linear-gradient(135deg, #ff6b9d, #c850c0);
+        background: linear-gradient(135deg, hsl(var(--c-hue), 80%, 65%), hsl(var(--c-hue), 60%, 50%));
         color: white;
         border: none;
         border-radius: 50px;
-        padding: 15px 40px;
-        font-size: 1.2rem;
+        padding: 16px 44px;
+        font-size: 1.25rem;
         font-weight: bold;
         cursor: pointer;
         transition: transform 0.2s, box-shadow 0.2s;
-        box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+        box-shadow: 0 10px 30px hsla(var(--c-hue), 80%, 60%, 0.4);
     }
 
     .btn-yes:hover {
         transform: scale(1.1);
-        box-shadow: 0 10px 30px rgba(255, 107, 157, 0.6);
+        box-shadow: 0 15px 40px hsla(var(--c-hue), 80%, 60%, 0.6);
     }
 
     .btn-no {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.08);
         color: white;
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 50px;
-        padding: 15px 40px;
-        font-size: 1.2rem;
+        padding: 16px 44px;
+        font-size: 1.25rem;
         font-weight: bold;
         cursor: pointer;
         transition: all 0.2s;
         position: relative;
+    }
+
+    .btn-no:hover {
+        background: rgba(255, 255, 255, 0.15);
     }
 
     .hidden-form {
@@ -106,7 +267,7 @@
         pointer-events: none;
         opacity: 1;
         transform: translateY(-10vh);
-        font-size: 2rem;
+        font-size: 2.5rem;
         animation: emoFall linear forwards;
     }
 
@@ -121,7 +282,7 @@
         position: fixed;
         z-index: 9999;
         pointer-events: none;
-        font-size: 3rem;
+        font-size: 3.5rem;
         animation: emoBlast 1.5s ease-out forwards;
     }
 
@@ -132,7 +293,7 @@
         }
 
         100% {
-            transform: translate(var(--dx), var(--dy)) scale(1.5);
+            transform: translate(var(--dx), var(--dy)) scale(1.8);
             opacity: 0;
         }
     }
@@ -140,7 +301,18 @@
 {% endblock style %}
 
 {% block content %}
-<div class="val-container">
+<!-- ENVELOPE INTRO -->
+<div class="env-intro interact" id="env-sys" onclick="openEnvelope()">
+    <div class="env-msg">You received a Love Card</div>
+    <div class="env">
+        <div class="env-body"></div>
+        <div class="env-flap"></div>
+        <div class="env-wax">♥</div>
+    </div>
+    <div class="env-tap">Tap to open</div>
+</div>
+
+<div class="val-container" id="v-cont">
     <div class="val-card">
         <h1 class="val-to">Dear {{ data.name|default:"Valentine" }},</h1>
 
@@ -166,7 +338,7 @@
                     <!-- We use check so views knows which form was sent -->
                     <input type="checkbox" name="status" checked>
                 </div>
-                <button type="submit" class="btn-yes" id="btn-yes">YES!</button>
+                <button type="submit" class="btn-yes interact" id="btn-yes">YES!</button>
             </form>
 
             <form action="" method="post" id="no-form">
@@ -175,7 +347,7 @@
                     {{ form }}
                     <!-- No status checked -->
                 </div>
-                <button type="submit" class="btn-no" id="btn-no">No</button>
+                <button type="submit" class="btn-no interact" id="btn-no">No</button>
             </form>
         </div>
         {% endif %}
@@ -183,6 +355,16 @@
 </div>
 
 <script>
+    function openEnvelope() {
+        const env = document.getElementById('env-sys');
+        if (env.classList.contains('opening')) return;
+        env.classList.add('opening');
+        document.getElementById('v-cont').classList.add('revealed');
+        setTimeout(() => {
+            env.style.display = 'none';
+        }, 1800);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const noBtn = document.getElementById('btn-no');
 
@@ -210,6 +392,10 @@
 
         // Animations based on final state
         {% if data.status %}
+        // If already accepted, auto-open immediately to show the joy
+        document.getElementById('env-sys').style.display = 'none';
+        document.getElementById('v-cont').classList.add('revealed');
+
         // Love Blast
         const loveEmojis = ['💖', '🥰', '💕', '💘', '💝', '🫶', '❤️', '🌹'];
         for (let i = 0; i < 60; i++) {
@@ -241,6 +427,8 @@
         }, 300);
 
         {% elif data.is_rejected %}
+        document.getElementById('env-sys').style.display = 'none';
+        document.getElementById('v-cont').classList.add('revealed');
         // Sad Rain
         const sadEmojis = ['💔', '😭', '😢', '🥀', '☔', '🥺'];
         for (let i = 0; i < 40; i++) {

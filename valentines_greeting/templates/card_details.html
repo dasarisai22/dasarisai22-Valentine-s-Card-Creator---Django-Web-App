@@ -1266,6 +1266,24 @@
             color: var(--rose);
         }
 
+        /* Dashboard Falling Emojis */
+        .f-emoji {
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 1;
+            transform: translateY(-10vh);
+            font-size: 2rem;
+            animation: emoFall linear forwards;
+        }
+
+        @keyframes emoFall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
         @media(max-width:768px) {
 
             .page-header,
@@ -1400,7 +1418,7 @@
                 {% for data in datas %}
                 <div class="card card-js interact"
                     data-status="{% if data.status %}accepted{% elif data.is_rejected %}declined{% else %}waiting{% endif %}"
-                    style="animation-delay: 0.{{ forloop.counter|add:20 }}s;">
+                    data-uuid="{{ data.card_uuid }}" style="animation-delay: 0.{{ forloop.counter|add:20 }}s;">
 
                     <!-- Badge -->
                     {% if data.status %}
@@ -1574,11 +1592,53 @@
         for (let i = 0; i < 22; i++) { let p = document.createElement('div'); p.className = 'particle'; let s = 2 + Math.random() * 4; p.style.width = s + 'px'; p.style.height = s + 'px'; p.style.left = (Math.random() * 100) + '%'; p.style.background = cols[Math.floor(Math.random() * cols.length)].replace('X', 0.3 + Math.random() * 0.5); p.style.setProperty('--drift', (-60 + Math.random() * 120) + 'px'); p.style.animation = `pRise ${12 + Math.random() * 20}s linear infinite`; p.style.animationDelay = (-Math.random() * 32) + 's'; pCont.appendChild(p); }
         for (let i = 0; i < 14; i++) { let p = document.createElement('div'); p.className = 'petal'; p.style.left = (Math.random() * 100) + '%'; p.style.setProperty('--drift', (-80 + Math.random() * 160) + 'px'); p.style.animation = `pFall ${14 + Math.random() * 20}s linear infinite`; p.style.animationDelay = (-Math.random() * 34) + 's'; fCont.appendChild(p); }
 
-        // Dynamic Counts
+        // Dynamic Counts and Unique Styling
         let acc = 0, wat = 0, dec = 0, tot = 0;
-        document.querySelectorAll('.card-js').forEach(c => { let s = c.getAttribute('data-status'); if (s === 'accepted') acc++; else if (s === 'declined') dec++; else wat++; tot++; });
+        document.querySelectorAll('.card-js').forEach(c => {
+            let s = c.getAttribute('data-status');
+            if (s === 'accepted') acc++;
+            else if (s === 'declined') dec++;
+            else wat++;
+            tot++;
+
+            // Unique theme generation
+            let u = c.getAttribute('data-uuid');
+            if (u) {
+                let h = 0; for (let i = 0; i < u.length; i++) h = u.charCodeAt(i) + ((h << 5) - h);
+                c.style.setProperty('--chue', Math.abs(h) % 360);
+                c.style.background = 'linear-gradient(145deg, hsla(var(--chue), 40%, 16%, 0.55), hsla(var(--chue), 20%, 8%, 0.8))';
+                c.style.borderColor = 'hsla(var(--chue), 50%, 40%, 0.25)';
+                c.style.boxShadow = '0 10px 30px hsla(var(--chue), 50%, 20%, 0.2), inset 0 1px 10px hsla(var(--chue), 60%, 50%, 0.1)';
+            }
+        });
         if (document.getElementById('c-acc')) { document.getElementById('c-acc').innerText = acc; document.getElementById('c-wat').innerText = wat; document.getElementById('c-dec').innerText = dec; }
         if (document.getElementById('ss-acc')) { document.getElementById('ss-acc').innerText = acc; document.getElementById('ss-wat').innerText = wat; let rat = tot > 0 ? Math.round((acc / tot) * 100) : 0; document.getElementById('ss-rat').innerText = rat + '%'; }
+
+        // Dashboard Falling Emojis based on Status
+        if (acc > 0) {
+            const loveEmojis = ['💖', '🥰', '💕', '💘'];
+            setInterval(() => {
+                let e = document.createElement('div');
+                e.className = 'f-emoji';
+                e.innerText = loveEmojis[Math.floor(Math.random() * loveEmojis.length)];
+                e.style.left = `${Math.random() * 100}vw`;
+                e.style.animationDuration = `${4 + Math.random() * 5}s`;
+                document.body.appendChild(e);
+                setTimeout(() => e.remove(), 9000);
+            }, 800);
+        }
+        if (dec > 0) {
+            const sadEmojis = ['💔', '🥀'];
+            setInterval(() => {
+                let e = document.createElement('div');
+                e.className = 'f-emoji';
+                e.innerText = sadEmojis[Math.floor(Math.random() * sadEmojis.length)];
+                e.style.left = `${Math.random() * 100}vw`;
+                e.style.animationDuration = `${5 + Math.random() * 5}s`;
+                document.body.appendChild(e);
+                setTimeout(() => e.remove(), 10000);
+            }, 1500);
+        }
 
         // Filter Function
         function setFilter(btn, s) {

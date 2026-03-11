@@ -96,8 +96,12 @@ def card_update (request, uuid):
                 card.image_base64 = data.image_base64
 
             card.save()
-            messages.success(request, 'Response Recorded!' if not is_owner else 'Card Updated!')
-            return redirect('card_details' if is_owner else 'card_update', uuid=card.card_uuid if not is_owner else None)
+            if is_owner:
+                messages.success(request, 'Card Updated!')
+                return redirect('card_details')
+            else:
+                messages.success(request, 'Response Recorded!')
+                return redirect('card_update', uuid=card.card_uuid)
     else:
         form = Cardform(instance=data)
     
